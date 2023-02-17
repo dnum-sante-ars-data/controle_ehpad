@@ -2,3 +2,8 @@
 *.xlsx
 *.db
 *.sqlite
+*settings/settings.json
+!data/input/demo.xlsx
+!data/to_csv/demo.csv
+!data/output/demo.csv
+!data/database/demo.db
