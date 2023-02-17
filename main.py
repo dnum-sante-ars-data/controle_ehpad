@@ -76,7 +76,7 @@ def _cleanSrcData(df):
 import sqlite3
 import shutil
 
-dbname = 'controle_ehpad'
+dbname = 'data/database/controle_ehpad'
 
 def checkIfDBExists(dbname):
     if os.path.exists(dbname + '.sqlite'):
@@ -104,16 +104,16 @@ def _executeTransform():
     return 
 
 # Go in all the input folders and store a csv clean version in to_csv
-allFolders = listdir('input')
-allFolders.remove('to_csv')
+allFolders = listdir('data/input')
+#allFolders.remove('data/to_csv') => inutile car on a viré to_csv de input pour le mettre à part dans data
 
 for folderName in allFolders:
     print("loop entrance")
-    folderPath = 'input/{}'.format(folderName)
+    folderPath = 'data/input/{}'.format(folderName)
     allFiles =  listdir(folderPath)
     for inputFileName in allFiles:
         inputFilePath = folderPath+'/'+inputFileName
-        outputFilePath = 'input/to_csv/'+inputFileName.split('.')[0]+'.csv'
+        outputFilePath = 'data/to_csv/'+inputFileName.split('.')[0]+'.csv'
         if inputFileName.split('.')[-1].lower()=='xlsx':
             _convertXlsxToCsv(inputFilePath,outputFilePath)
             print('converted excel file and added: {}'.format(inputFileName))
@@ -123,14 +123,14 @@ for folderName in allFolders:
             print('added csv file: {}'.format(inputFileName))
             #shutil.copyfile(inputFilePath,outputFilePath)
 
-allCsv = listdir('input/to_csv')
+allCsv = listdir('data/to_csv')
 
 
 
 for inputCsvFilePath in allCsv:
     _importSrcData(
         _cleanSrcData(
-            _csvReader( 'input/to_csv/'+inputCsvFilePath
+            _csvReader( 'data/to_csv/'+inputCsvFilePath
                        )
             ),
         inputCsvFilePath.split('/')[-1].split('.')[0]

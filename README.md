@@ -34,6 +34,9 @@ _ settings
 ... données dans input : format, règles etc. 
 ... settings à créer sur base de settings.demo
 
+## data/input/diamant
+* 
+
 # Commandes du script
 python main.py init_db
 python main.py transform
