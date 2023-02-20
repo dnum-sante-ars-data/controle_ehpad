@@ -10,6 +10,7 @@
 !data/input/insee/demo.csv
 !data/input/sirec/demo.xlsx
 !data/input/sivss/demo.xlsx
+!data/input/finess/demo.xlsx
 !data/to_csv/demo.csv
 !data/output/demo.csv
 !data/database/demo.db

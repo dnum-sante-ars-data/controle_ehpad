@@ -5,6 +5,7 @@ Created on Tue Jan 17 10:30:45 2023
 @author: mathieu.olivier
 """
 
+# Ajouter les fonctions qui permettent de préciser une commande pour run certaines fonctions seulement
 
 # Modules à installer
 import os
@@ -15,13 +16,14 @@ import pandas as pd
 #La feuille d'interet doit etre placée en premier
 #Les noms de colonne doivent être ne première ligne et aucune colonne ne doit être vide sur la gauche
 
-
+# à déplacer dans utils/utils.py 
 def checkIfPathExists(file):
     if os.path.exists(file):
         os.remove(file)
         print('Ancien fichier écrasé')
         
 
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
 def _convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
     try:
     # Reading an excel file
@@ -35,16 +37,18 @@ def _convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
         print(err)
         return str(err) 
 
-#_convertXlsxToCsv("C:/Users/mathieu.olivier/Documents/Helios/Script_V2/input/Calcul du nombre de signalements.xlsx")
 
+#_convertXlsxToCsv("C:/Users/mathieu.olivier/Documents/Helios/Script_V2/input/Calcul du nombre de signalements.xlsx")
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
 def _csvReader(csvFilePath):
     df = pd.read_csv(csvFilePath, sep= ';', encoding='UTF-8',low_memory=False)
     return df
 
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
 #Pousser le csv sans mettre en dataframe
 
 
-
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
 ### Partie nettoyage des données
 
 from unidecode import unidecode
@@ -70,7 +74,7 @@ def _cleanSrcData(df):
 
 
 
-
+# à déplacer dans modules/init_db/init_db.py
 ### Partie Création de la DB et ajout des tables
 
 import sqlite3
@@ -80,7 +84,7 @@ dbname = 'data/database/controle_ehpad'
 
 def checkIfDBExists(dbname):
     if os.path.exists(dbname + '.sqlite'):
-        os.remove(dbname + '.sqlite')
+        os.remove(dbname + '.db')
         print('Ancienne base de donnée écrasée')
 
 def _initDb(dbname):
