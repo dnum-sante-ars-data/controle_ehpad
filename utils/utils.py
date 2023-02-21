@@ -1,0 +1,79 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Fev 20 14:38:45 2023
+
+@author: mathieu.olivier
+"""
+import os
+import pandas as pd
+from unidecode import unidecode
+import re
+from init_db import init_db
+
+#Regle à respecter fichier excel seulement
+#La feuille d'interet doit etre placée en premier
+#Les noms de colonne doivent être ne première ligne et aucune colonne ne doit être vide sur la gauche
+
+# à déplacer dans utils/utils.py 
+def checkIfPathExists(file):
+    if os.path.exists(file):
+        os.remove(file)
+        print('Ancien fichier écrasé')
+        
+        
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
+def _convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
+    try:
+    # Reading an excel file
+    #   sheetname = getSheetName()
+        excelFile = pd.read_excel(inputExcelFilePath, header=0)
+        checkIfPathExists(outputCsvFilePath)
+    # Converting excel file into CSV file
+        excelFile.to_csv(outputCsvFilePath, index = None, header=True, sep=';', encoding='UTF-8')
+        return outputCsvFilePath
+    except ValueError as err:
+        print(err)
+        return str(err)        
+    
+#_convertXlsxToCsv("C:/Users/mathieu.olivier/Documents/Helios/Script_V2/input/Calcul du nombre de signalements.xlsx")
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
+def _csvReader(csvFilePath):
+    df = pd.read_csv(csvFilePath, sep= ';', encoding='UTF-8',low_memory=False)
+    return df
+
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
+#Pousser le csv sans mettre en dataframe
+
+# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
+### Partie nettoyage des données
+
+
+def _cleanTxt(text):
+    try:
+        text = unicode(text.lower(), 'utf-8')
+    except (TypeError, NameError): # unicode is a default on python 3 
+        pass
+    text = unidecode(text.lower())
+    text = text.encode('ascii', 'ignore')
+    text = text.decode("utf-8")
+
+    text = re.sub('[ ]+', '_', text)
+    text = re.sub('[^0-9a-zA-Z_-]', '', text) 
+    return str(text)
+
+def _cleanSrcData(df):
+# Enlever caractères spéciaux, accents, espace ( _ ) ,
+    df.columns = [ _cleanTxt(i) for i in df.columns.values.tolist()]
+    return df
+
+def storageDbName():
+    global dbname
+    dbname = 'data/database/controle_ehpad'
+
+def storageConn():
+    global conn
+    conn = init_db._initDb(dbname)
+
+
+
+
