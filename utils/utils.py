@@ -7,8 +7,7 @@ Created on Mon Fev 20 14:38:45 2023
 import os
 import pandas as pd
 from unidecode import unidecode
-import re
-from init_db import init_db
+import re 
 
 #Regle à respecter fichier excel seulement
 #La feuille d'interet doit etre placée en premier
@@ -66,13 +65,9 @@ def _cleanSrcData(df):
     df.columns = [ _cleanTxt(i) for i in df.columns.values.tolist()]
     return df
 
-def storageDbName():
-    global dbname
-    dbname = 'data/database/controle_ehpad'
 
-def storageConn():
-    global conn
-    conn = init_db._initDb(dbname)
+
+
 
 
 

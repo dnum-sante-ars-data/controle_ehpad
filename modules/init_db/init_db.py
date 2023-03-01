@@ -4,11 +4,9 @@ Created on Mon Fev 20 14:38:45 2023
 
 @author: mathieu.olivier
 """
-import pandas as pd
-from utils import utils
+#import pandas as pd
 import sqlite3
 import os
-from os import listdir
 
 
 # à déplacer dans modules/init_db/init_db.py
@@ -28,7 +26,12 @@ def _initDb(dbname):
     print('Création de la base de donnée {}.sqlite '.format(dbname))
     return conn
 
-def _importSrcData(df, table_name):
+def _connDb(dbname):
+    conn = sqlite3.connect(dbname + '.sqlite')
+    conn
+    return conn
+
+def _importSrcData(df, table_name, conn, dbname):
     df.to_sql(name=table_name, con=conn)
     print('La table {} a été ajouté à la base de donnée {}'.format(table_name,dbname))
     return 

@@ -11,8 +11,9 @@ Created on Tue Jan 17 10:30:45 2023
 import argparse
 from os import listdir
 import pandas as pd 
-from modules.init_db import init_db
+from modules.init_db.init_db import _initDb, _importSrcData
 from utils import utils
+import json
 
 def __main__(args):
     if args.commande == "create_csv":
@@ -22,13 +23,21 @@ def __main__(args):
     elif args.commande == "load_csv":
         _loadCsvToDb()
     elif args.commande == "all":
-        _allFunctions()        
+        _allFunctions()  
+    elif args.commande == "rien":
+        print('rien') 
     return
 
 
 def _exeDbInit():
-    utils.storageDbName()
-    utils.storageConn()
+    # Opening JSON file
+    f = open('settings/settings_demo.json')
+      
+    # returns JSON object as 
+    # a dictionary
+    data = json.load(f)
+    print(data)
+    _initDb('data/database/controle_ehpad')
     return
 
 def _createCsv():
@@ -59,7 +68,7 @@ def _createCsv():
 def _loadCsvToDb():
     allCsv = listdir('data/to_csv')
     for inputCsvFilePath in allCsv:
-        init_db._importSrcData(
+        _importSrcData(
             utils._cleanSrcData(
                 utils._csvReader( 'data/to_csv/'+inputCsvFilePath
                            )

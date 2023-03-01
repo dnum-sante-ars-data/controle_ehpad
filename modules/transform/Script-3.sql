@@ -6,7 +6,7 @@ SELECT
 FROM sirec_export se
 WHERE 
 	se.ndeg_finessrpps  IS NOT NULL
-	AND se.Signalement = 'Non'
+	AND se.Signalement != 'Oui'
 	AND se.date_de_la_demande_du_requerant  >= '2018-01-01' 
 	AND se.date_de_la_demande_du_requerant < '2023-01-01'
 	AND se.domaine_fonctionnel  = 'Médico-Social - Personnes âgées'
@@ -40,14 +40,24 @@ GROUP BY 1
 -- info signalement
 sign as (
 SELECT 
-	sig.declarant_organismendeg_finess as finess,
+	finess,
 	COUNT(*) as nb_signa
-FROM "020820221058_Extraction_BFC" sig 
+FROM 
+(SELECT 
+	CASE 
+		WHEN substring(eb.declarant_organismendeg_finess,-9) == substring(CAST(eb.survenue_du_cas_en_collectivitendeg_finess as text),1,9)
+			THEN substring(eb.declarant_organismendeg_finess,-9)
+		WHEN eb.survenue_du_cas_en_collectivitendeg_finess IS NULL
+			THEN substring(eb.declarant_organismendeg_finess,-9)
+		ELSE 
+			substring(CAST(eb.survenue_du_cas_en_collectivitendeg_finess as text),1,9)
+	END as finess, *
+FROM "020820221058_Extraction_BFC" eb  
 WHERE 
-	sig.reclamation = 'Non'
-	AND sig.date_de_reception >= '2018-01-01' 
-	AND sig.date_de_reception < '2023-01-01'
-	AND sig.declarant_type_etablissement_si_esems = "Etablissement d'hébergement pour personnes âgées dépendantes"
+	eb.reclamation != 'Oui'
+	AND eb.date_de_reception >= '2018-01-01' 
+	AND eb.date_de_reception < '2023-01-01'
+	AND eb.declarant_type_etablissement_si_esems like "%Etablissement d'hébergement pour personnes âgées dépendantes%") as sub_table
 GROUP BY 1
 )
 -- Pour checker les "MOTIF IGAS"
@@ -72,3 +82,4 @@ FROM
 	LEFT JOIN table_recla tr on tf.finess = tr.finess
 	LEFT JOIN igas i on i.finess = tf.finess
 	LEFT JOIN sign s on s.finess = tf.finess
+	WHERE tf.finess = '620024661'
