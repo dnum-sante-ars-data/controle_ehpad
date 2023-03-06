@@ -11,9 +11,8 @@ Created on Tue Jan 17 10:30:45 2023
 import argparse
 from os import listdir
 import pandas as pd 
-from modules.init_db.init_db import _initDb, _importSrcData
+from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
-import json
 
 def __main__(args):
     if args.commande == "create_csv":
@@ -31,13 +30,8 @@ def __main__(args):
 
 def _exeDbInit():
     # Opening JSON file
-    f = open('settings/settings_demo.json')
-      
-    # returns JSON object as 
-    # a dictionary
-    data = json.load(f)
-    print(data)
-    _initDb('data/database/controle_ehpad')
+    dbname = utils.read_settings('settings/settings_demo.json',"db","name")
+    _initDb(dbname)
     return
 
 def _createCsv():
@@ -66,14 +60,18 @@ def _createCsv():
 
 
 def _loadCsvToDb():
+    dbname = utils.read_settings('settings/settings_demo.json',"db","name")
     allCsv = listdir('data/to_csv')
+    conn = _connDb(dbname)
     for inputCsvFilePath in allCsv:
         _importSrcData(
             utils._cleanSrcData(
                 utils._csvReader( 'data/to_csv/'+inputCsvFilePath
                            )
                 ),
-            inputCsvFilePath.split('/')[-1].split('.')[0]
+            inputCsvFilePath.split('/')[-1].split('.')[0],
+            conn,
+            dbname
             )
         print("file added to db: {}".format(inputCsvFilePath))
     return

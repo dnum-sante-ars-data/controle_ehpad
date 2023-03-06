@@ -5,7 +5,6 @@ Created on Mon Fev 20 14:38:45 2023
 @author: mathieu.olivier
 """
 import json
-from modules.init_db.test import testretour
 
 def _executeTransform():
     #Appeler les requetes sql

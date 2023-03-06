@@ -1,1 +1,8 @@
-db = {"dbname": "data/database/controle_ehpad"}
+{
+    "db":
+    [
+        {
+            "name":"data/database/controle_ehpad"
+        }
+    ]
+}

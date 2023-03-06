@@ -8,6 +8,8 @@ import os
 import pandas as pd
 from unidecode import unidecode
 import re 
+import json
+import logging
 
 #Regle à respecter fichier excel seulement
 #La feuille d'interet doit etre placée en premier
@@ -65,10 +67,22 @@ def _cleanSrcData(df):
     df.columns = [ _cleanTxt(i) for i in df.columns.values.tolist()]
     return df
 
+def read_settings(path_in, dict, elem):
+    """
+    Permet de lire le document settings et retourne les informations souhaitées au format dictionnaire.
+    Paramètres :
+        - path_in : Chemin du dossier settings où sont stockées les informations.
+        - dict : Dictionnaire contenant les informations que l'on recherche.
+        - elem : Elément au sein du dictionnaire dont on souhaite retourner les informations.
+    """
+    with open(path_in) as f:
+        dict_ret = json.load(f)
+    L_ret = dict_ret[dict]
+    param_config = {}
+    for param in L_ret:
+        param_config = param[elem]
+    logging.info("Lecture param config" + path_in + ".")
+    return param_config
 
 
-
-
-
-
-
+read_settings('settings/settings_demo.json',"db","name")
