@@ -82,4 +82,3 @@ FROM
 	LEFT JOIN table_recla tr on tf.finess = tr.finess
 	LEFT JOIN igas i on i.finess = tf.finess
 	LEFT JOIN sign s on s.finess = tf.finess
-	WHERE tf.finess = '620024661'

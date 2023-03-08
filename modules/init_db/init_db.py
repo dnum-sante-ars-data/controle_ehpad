@@ -4,7 +4,7 @@ Created on Mon Fev 20 14:38:45 2023
 
 @author: mathieu.olivier
 """
-#import pandas as pd
+import pandas as pd
 import sqlite3
 import os
 
