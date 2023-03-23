@@ -3,7 +3,7 @@ WITH table_recla as (
 SELECT 
 	se.ndeg_finessrpps as finess,
 	COUNT(*) as nb_recla
-FROM sirec_export se
+FROM reclamations_mars20_mars2023 se
 WHERE 
 	se.ndeg_finessrpps  IS NOT NULL
 	AND se.Signalement != 'Oui'
@@ -28,7 +28,7 @@ SELECT
 	SUM(IIF(se.motifs_igas like '%Activités d?esthétique réglementées%',1,0)) as "Activités d?esthétique réglementées",
 	SUM(IIF(se.motifs_igas like '%A renseigner%',1,0)) as "A renseigner",
 	SUM(IIF(se.motifs_igas like '%COVID-19%',1,0)) as "COVID-19"
-FROM sirec_export se
+FROM reclamations_mars20_mars2023 se
 WHERE 
 	se.signalement = 'Non'
 	AND se.ndeg_finessrpps  IS NOT NULL
@@ -63,7 +63,6 @@ GROUP BY 1
 -- Pour checker les "MOTIF IGAS"
 SELECT
 	tf.finess,
-	s.nb_signa,
 	tr.nb_recla,
 	i."Hôtellerie-locaux-restauration",
 	i."Problème d?organisation ou de fonctionnement de l?établissement ou du service",
@@ -76,7 +75,8 @@ SELECT
 	i."Santé-environnementale",
 	i."Activités d?esthétique réglementées",
 	i."A renseigner",
-	i."COVID-19"
+	i."COVID-19",
+	s.nb_signa
 FROM 
 	"t-finess" tf 
 	LEFT JOIN table_recla tr on tf.finess = tr.finess

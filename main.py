@@ -37,8 +37,8 @@ def _exeDbInit():
 def _createCsv():
     # Go in all the input folders and store a csv clean version in to_csv
     allFolders = listdir('data/input')
-    #allFolders.remove('data/to_csv') => inutile car on a viré to_csv de input pour le mettre à part dans data
-    
+    allFolders.remove('sivss')
+    utils._concatSignalement()
     for folderName in allFolders:
         print("loop entrance")
         folderPath = 'data/input/{}'.format(folderName)
@@ -47,13 +47,16 @@ def _createCsv():
             inputFilePath = folderPath+'/'+inputFileName
             outputFilePath = 'data/to_csv/'+inputFileName.split('.')[0]+'.csv'
             if inputFileName == 'demo.csv' or inputFileName == 'demo.xlsx':
-                print('file demo')
+                print('file demo not added')
             elif inputFileName.split('.')[-1].lower()=='xlsx':
                 utils._convertXlsxToCsv(inputFilePath,outputFilePath)
                 print('converted excel file and added: {}'.format(inputFileName))
             elif inputFileName.split('.')[-1].lower()=='csv':
-                df = pd.read_csv(inputFilePath, sep=';', encoding='latin-1')
-                df.to_csv(outputFilePath, index = None, header=True, sep=';', encoding='UTF-8')
+                outputExcel = inputFilePath.split('.')[0]+'.xlsx'
+                df = pd.read_csv(inputFilePath, sep=';', encoding='latin-1', low_memory=(False))
+                df.to_excel(outputExcel)
+                df2 = pd.read_excel(outputExcel)
+                df2.to_csv(outputFilePath, index = None, header=True, sep=';', encoding='UTF-8')
                 print('added csv file: {}'.format(inputFileName))
                 #shutil.copyfile(inputFilePath,outputFilePath)
     return

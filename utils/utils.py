@@ -10,6 +10,7 @@ from unidecode import unidecode
 import re 
 import json
 import logging
+from os import listdir
 
 #Regle à respecter fichier excel seulement
 #La feuille d'interet doit etre placée en premier
@@ -22,7 +23,6 @@ def checkIfPathExists(file):
         print('Ancien fichier écrasé')
         
         
-# à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
 def _convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
     try:
     # Reading an excel file
@@ -34,7 +34,21 @@ def _convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
         return outputCsvFilePath
     except ValueError as err:
         print(err)
-        return str(err)        
+        return str(err) 
+
+        
+def _convertCsvToXlsx(inputCsvFilePath, outputExcelFilePath):
+    try:
+    # Reading a csv file
+    #   sheetname = getSheetName()
+        csvFile = pd.read_csv(inputCsvFilePath)
+        checkIfPathExists(outputExcelFilePath)
+    # Converting CSV file into Excel file
+        csvFile.to_excel(outputExcelFilePath, index = None, header=True, sep=';', encoding='UTF-8')
+        return outputExcelFilePath
+    except ValueError as err:
+        print(err)
+        return str(err)   
     
 #_convertXlsxToCsv("C:/Users/mathieu.olivier/Documents/Helios/Script_V2/input/Calcul du nombre de signalements.xlsx")
 # à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
@@ -84,5 +98,19 @@ def read_settings(path_in, dict, elem):
     logging.info("Lecture param config" + path_in + ".")
     return param_config
 
-
-read_settings('settings/settings_demo.json',"db","name")
+# Fonction pour concaténer les différentes régions de SIVSS
+def _concatSignalement():
+    #créer une liste avec les noms de table de signalement
+    folderPath = 'data/input/sivss'
+    allSignalFiles =  listdir(folderPath)
+    allSignalFiles.remove('demo.xlsx')
+    checkIfPathExists('data/to_csv/all_sivss.csv')
+    # create an Empty DataFrame object
+    df = pd.DataFrame()
+    for fileName in allSignalFiles:
+        df = pd.concat([df, pd.read_excel('data/input/sivss/'+fileName)])
+    print('signalement concaténés')
+    df.to_csv('data/to_csv/all_sivss.csv', index = None, header=True, sep=';', encoding='UTF-8')
+    print('all_sivss.csv créé')
+    return
+ 
