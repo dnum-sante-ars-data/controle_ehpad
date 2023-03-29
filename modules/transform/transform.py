@@ -9,17 +9,43 @@ from os import listdir
 import pandas as pd
 from modules.init_db.init_db import _connDb
 from utils import utils
+import statistics
 
 def _executeTransform(region):
     #Appeler les requetes sql
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
     conn = _connDb(dbname)
+    conn.create_function("NULLTOZERO", 1, _nullToZero)
+    conn.create_function("MOY3", 3, _moy3)
     print('Exécution requête ciblage')
     df_ciblage = pd.read_sql_query( _requeteCiblage(region), conn)
     print('Exécution requête controle')
     df_controle = pd.read_sql_query( _requeteControle(region), conn)
     return df_ciblage, df_controle
 
+# Definiton des functions utiles en SQL
+def _nullToZero(value):
+    if value is None:
+        return 0
+    else:
+        return value
+    
+def _moy3(value1, value2, value3):
+    value_list = [value1,value2,value3]
+    res = []
+    for val in value_list:
+        if val != None :
+            res.append(str(val).replace(",", '.'))
+    if len(res)== 0:
+        return None
+    else :
+        clean_res = [float(i) for i in res]
+        return sum(clean_res)/len(clean_res) #statistics.mean(res)
+
+def _functionCreator():
+    dbname = utils.read_settings('settings/settings_demo.json',"db","name")
+    conn = _connDb(dbname)
+    return
 
 # Requete signalement et réclamation
 # Jointure des tables de t-finess + signalement
@@ -362,46 +388,46 @@ SELECT
 	d2.taux_dabsenteisme_hors_formation_en_ /100 as "Taux d'absentéisme 2019",
 	etra2.taux_dabsenteisme_hors_formation_en_ /100 as "Taux d'absentéisme 2020",
 	etra.taux_dabsenteisme_hors_formation_en_ /100 as "Taux d'absentéisme 2021",
-	ROUND((d2.taux_dabsenteisme_hors_formation_en_ + etra2.taux_dabsenteisme_hors_formation_en_ + etra.taux_dabsenteisme_hors_formation_en_)/(3*100) ,4) as "Absentéisme moyen sur la période 2019-2021",
+    ROUND(MOY3(d2.taux_dabsenteisme_hors_formation_en_ ,etra2.taux_dabsenteisme_hors_formation_en_ , etra.taux_dabsenteisme_hors_formation_en_)/100 ,4) as "Absentéisme moyen sur la période 2019-2021",
 	d2.taux_de_rotation_des_personnels_en_ /100 as "Taux de rotation du personnel titulaire 2019",
 	etra2.taux_de_rotation_des_personnels /100 as "Taux de rotation du personnel titulaire 2020",
 	etra.taux_de_rotation_des_personnels /100 as "Taux de rotation du personnel titulaire 2021",
-	ROUND((d2.taux_de_rotation_des_personnels_en_ + etra2.taux_de_rotation_des_personnels + etra.taux_de_rotation_des_personnels)/(3*100), 4) as "Rotation moyenne du personnel sur la période 2019-2021",
+	ROUND(MOY3(d2.taux_de_rotation_des_personnels_en_ , etra2.taux_de_rotation_des_personnels , etra.taux_de_rotation_des_personnels)/100, 4) as "Rotation moyenne du personnel sur la période 2019-2021",
 	d2.taux_detp_vacants_en_ as "ETP vacants 2019",
 	etra2.taux_detp_vacants as "ETP vacants 2020",
 	etra.taux_detp_vacants as "ETP vacants 2021",
 	etra.dont_taux_detp_vacants_concernant_la_fonction_soins as "dont fonctions soins 2021",
 	etra.dont_taux_detp_vacants_concernant_la_fonction_socio_educative as "dont fonctions socio-éducatives 2021", 
-	d3.taux_de_prestations_externes_sur_les_prestations_directes_en_ /100 as "Taux de prestations externes sur les prestations directes 2019",
+	CAST(REPLACE(d3.taux_de_prestations_externes_sur_les_prestations_directes_en_,',','.')as decimal) /100 as "Taux de prestations externes sur les prestations directes 2019",
 	etra2.taux_de_prestations_externes_sur_les_prestations_directes /100 as "Taux de prestations externes sur les prestations directes 2020", 
 	etra.taux_de_prestations_externes_sur_les_prestations_directes /100 as "Taux de prestations externes sur les prestations directes 2021",
-	ROUND((d3.taux_de_prestations_externes_sur_les_prestations_directes_en_ + etra2.taux_de_prestations_externes_sur_les_prestations_directes + etra.taux_de_prestations_externes_sur_les_prestations_directes)/(3*100) ,4) as "Taux moyen de prestations externes sur les prestations directes",
-	ROUND(d3.nombre_de_personnes_accompagnees_dans_leffectif_au_3112/d3.nombre_detp_reel_au_3112, 2) as "Nombre total d'ETP par usager en 2019",
-	ROUND((etra2.etp_directionencadrement + etra2.etp_administration_gestion + etra2.etp_services_generaux + etra2.etp_restauration + etra2."etp_socio-educatif" + etra2.etp_paramedical + etra2.etp_psychologue + etra2.etp_ash + etra2.etp_medical + etra2.etp_personnel_education_nationale + etra2.etp_autres_fonctions)/etra2.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) as "Nombre total d'ETP par usager en 2020",
+	ROUND(MOY3(d3.taux_de_prestations_externes_sur_les_prestations_directes_en_ , etra2.taux_de_prestations_externes_sur_les_prestations_directes , etra.taux_de_prestations_externes_sur_les_prestations_directes)/100 ,4) as "Taux moyen de prestations externes sur les prestations directes",
+	ROUND(CAST(REPLACE(d3.nombre_de_personnes_accompagnees_dans_leffectif_au_3112,',','.')as decimal)/CAST(REPLACE(d3.nombre_detp_reel_au_3112,',','.')as decimal), 2) as "Nombre total d'ETP par usager en 2019",
+    ROUND((etra2.etp_directionencadrement + etra2.etp_administration_gestion + etra2.etp_services_generaux + etra2.etp_restauration + etra2."etp_socio-educatif" + etra2.etp_paramedical + etra2.etp_psychologue + etra2.etp_ash + etra2.etp_medical + etra2.etp_personnel_education_nationale + etra2.etp_autres_fonctions)/etra2.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) as "Nombre total d'ETP par usager en 2020",
 	ROUND((etra.etp_directionencadrement + etra.etp_administration_gestion + etra.etp_services_generaux + etra.etp_restauration + etra."etp_socio-educatif" + etra.etp_paramedical + etra.etp_psychologue + etra.etp_ash + etra.etp_medical + etra.etp_personnel_education_nationale + etra.etp_autres_fonctions)/etra.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) as "Nombre total d'ETP par usager en 2021",
-	(ROUND(d3.nombre_de_personnes_accompagnees_dans_leffectif_au_3112/d3.nombre_detp_reel_au_3112, 2) + ROUND((etra2.etp_directionencadrement + etra2.etp_administration_gestion + etra2.etp_services_generaux + etra2.etp_restauration + etra2."etp_socio-educatif" + etra2.etp_paramedical + etra2.etp_psychologue + etra2.etp_ash + etra2.etp_medical + etra2.etp_personnel_education_nationale + etra2.etp_autres_fonctions)/etra2.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) + ROUND((etra.etp_directionencadrement + etra.etp_administration_gestion + etra.etp_services_generaux + etra.etp_restauration + etra."etp_socio-educatif" + etra.etp_paramedical + etra.etp_psychologue + etra.etp_ash + etra.etp_medical + etra.etp_personnel_education_nationale + etra.etp_autres_fonctions)/etra.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2))/3 AS "Nombre moyen d'ETP par usager sur la période 2018-2020",
+	MOY3(ROUND(CAST(REPLACE(d3.nombre_de_personnes_accompagnees_dans_leffectif_au_3112,',','.')as decimal)/CAST(REPLACE(d3.nombre_detp_reel_au_3112,',','.')as decimal), 2) , ROUND((etra2.etp_directionencadrement + etra2.etp_administration_gestion + etra2.etp_services_generaux + etra2.etp_restauration + etra2."etp_socio-educatif" + etra2.etp_paramedical + etra2.etp_psychologue + etra2.etp_ash + etra2.etp_medical + etra2.etp_personnel_education_nationale + etra2.etp_autres_fonctions)/etra2.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) , ROUND((etra.etp_directionencadrement + etra.etp_administration_gestion + etra.etp_services_generaux + etra.etp_restauration + etra."etp_socio-educatif" + etra.etp_paramedical + etra.etp_psychologue + etra.etp_ash + etra.etp_medical + etra.etp_personnel_education_nationale + etra.etp_autres_fonctions)/etra.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2))AS "Nombre moyen d'ETP par usager sur la période 2018-2020",
 	ROUND((etra.etp_paramedical + etra.etp_medical)/etra.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) as "ETP 'soins' par usager en 2021",
 	ROUND(etra."-_dont_nombre_detp_reels_de_medecin_coordonnateur", 2) as "dont médecin coordonnateur",
 	ROUND(etra.etp_directionencadrement + etra.etp_administration_gestion + etra.etp_services_generaux + etra.etp_restauration + etra."etp_socio-educatif" + etra.etp_paramedical + etra.etp_psychologue + etra.etp_ash + etra.etp_medical + etra.etp_personnel_education_nationale + etra.etp_autres_fonctions, 2) as "Total du nombre d'ETP",
 	rs.nb_recla as "Nombre de réclamations sur la période 2018-2022",
 	ROUND(rs.nb_recla / ccta.somme_de_capacite_autorisee_totale_, 4) as "Rapport réclamations / capacité",
-	rs."Hôtellerie-locaux-restauration" + 0 as "Recla IGAS : Hôtellerie-locaux-restauration",
-	rs."Problème d?organisation ou de fonctionnement de l?établissement ou du service" as "Recla IGAS : Problème d’organisation ou de fonctionnement de l’établissement ou du service",
-	rs."Problème de qualité des soins médicaux" as "Recla IGAS : Problème de qualité des soins médicaux",
-	rs."Problème de qualité des soins paramédicaux" as "Recla IGAS : Problème de qualité des soins paramédicaux",
-	rs."Recherche d?établissement ou d?un professionnel" as "Recla IGAS : Recherche d’établissement ou d’un professionnel",
-	rs."Mise en cause attitude des professionnels" as "Recla IGAS : Mise en cause attitude des professionnels",
-	rs."Informations et droits des usagers" as "Recla IGAS : Informations et droits des usagers",
-	rs."Facturation et honoraires" as "Recla IGAS : Facturation et honoraires",
-	rs."Santé-environnementale" as "Recla IGAS : Santé-environnementale",
-	rs."Activités d?esthétique réglementées" as "Recla IGAS : Activités d’esthétique réglementées",
-	rs.NB_EIGS as "Nombre d'EIG sur la période 2020-2023",
-	rs.NB_EIAS as "Nombre d'EIAS sur la période 2020-2022",
-	rs."Nombre d'EI sur la période 36mois" + rs.NB_EIGS + rs.NB_EIAS as "Somme EI + EIGS + EIAS sur la période 2020-2022",
-	i."ICE 2022 (réalisé)",
-	i."Inspection SUR SITE 2022 - Déjà réalisée",
-	i."Controle SUR PIECE 2022 - Déjà réalisé",
-	i."Inspection / contrôle Programmé 2023"
+	NULLTOZERO(rs."Hôtellerie-locaux-restauration") as "Recla IGAS : Hôtellerie-locaux-restauration",
+	NULLTOZERO(rs."Problème d?organisation ou de fonctionnement de l?établissement ou du service") as "Recla IGAS : Problème d’organisation ou de fonctionnement de l’établissement ou du service",
+	NULLTOZERO(rs."Problème de qualité des soins médicaux") as "Recla IGAS : Problème de qualité des soins médicaux",
+	NULLTOZERO(rs."Problème de qualité des soins paramédicaux") as "Recla IGAS : Problème de qualité des soins paramédicaux",
+	NULLTOZERO(rs."Recherche d?établissement ou d?un professionnel") as "Recla IGAS : Recherche d’établissement ou d’un professionnel",
+	NULLTOZERO(rs."Mise en cause attitude des professionnels") as "Recla IGAS : Mise en cause attitude des professionnels",
+	NULLTOZERO(rs."Informations et droits des usagers") as "Recla IGAS : Informations et droits des usagers",
+	NULLTOZERO(rs."Facturation et honoraires") as "Recla IGAS : Facturation et honoraires",
+	NULLTOZERO(rs."Santé-environnementale") as "Recla IGAS : Santé-environnementale",
+	NULLTOZERO(rs."Activités d?esthétique réglementées") as "Recla IGAS : Activités d’esthétique réglementées",
+	NULLTOZERO(rs.NB_EIGS) as "Nombre d'EIG sur la période 2020-2023",
+	NULLTOZERO(rs.NB_EIAS) as "Nombre d'EIAS sur la période 2020-2022",
+	NULLTOZERO(rs."Nombre d'EI sur la période 36mois") + NULLTOZERO(rs.NB_EIGS) + NULLTOZERO(rs.NB_EIAS) as "Somme EI + EIGS + EIAS sur la période 2020-2022",
+	NULLTOZERO(i."ICE 2022 (réalisé)") as "ICE 2022 (réalisé)",
+	NULLTOZERO(i."Inspection SUR SITE 2022 - Déjà réalisée") as "Inspection SUR SITE 2022 - Déjà réalisée",
+	NULLTOZERO(i."Controle SUR PIECE 2022 - Déjà réalisé") as "Controle SUR PIECE 2022 - Déjà réalisé",
+	NULLTOZERO(i."Inspection / contrôle Programmé 2023") as "Inspection / contrôle Programmé 2023"
 FROM
 	tfiness_clean tf 
 	LEFT JOIN commune_2022 c on c.com = tf.com_code AND c.typecom = 'COM'
