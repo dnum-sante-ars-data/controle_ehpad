@@ -13,6 +13,8 @@ from os import listdir
 import pandas as pd 
 from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
+from modules.transform.transform import _executeTransform
+from modules.export.export import _export
 
 def __main__(args):
     if args.commande == "create_csv":
@@ -21,10 +23,10 @@ def __main__(args):
         _exeDbInit()
     elif args.commande == "load_csv":
         _loadCsvToDb()
+    elif args.commande == "export":
+        _createExport(region = args.region)
     elif args.commande == "all":
         _allFunctions()  
-    elif args.commande == "rien":
-        print('rien') 
     return
 
 
@@ -79,15 +81,22 @@ def _loadCsvToDb():
         print("file added to db: {}".format(inputCsvFilePath))
     return
 
+def _createExport(region):
+    df_ciblage, df_controle = _executeTransform(region)
+    _export(region, df_ciblage, df_controle)
+    return
+
 def _allFunctions():
     _exeDbInit()
     _createCsv()
     _loadCsvToDb()
+    _createExport()
     return
 
 # Initialisation du parsing
 parser = argparse.ArgumentParser()
 parser.add_argument("commande", type=str, help="Commande à exécuter")
+parser.add_argument("region", type=int, help="Code region pour filtrer")
 args = parser.parse_args()
 
 # Core

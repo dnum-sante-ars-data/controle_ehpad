@@ -10,23 +10,28 @@ import pandas as pd
 from modules.init_db.init_db import _connDb
 from utils import utils
 
-def _executeTransform(nomRequete):
+def _executeTransform(region):
     #Appeler les requetes sql
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
     conn = _connDb(dbname)
-    if nomRequete == 'ciblage':
-        df = pd.read_sql_query( _requeteCiblage(), conn)
-        return  df
-    elif nomRequete == 'controle':
-        df = pd.read_sql_query( _requeteControle(), conn)
-        return  df
-    else:
-        print('Nom de requete incorrect. Merci de chosir entre ciblage ou controle')
-        return
+    print('Exécution requête ciblage')
+    df_ciblage = pd.read_sql_query( _requeteCiblage(region), conn)
+    print('Exécution requête controle')
+    df_controle = pd.read_sql_query( _requeteControle(region), conn)
+    return df_ciblage, df_controle
 
 
 # Requete signalement et réclamation
 # Jointure des tables de t-finess + signalement
+def _testNomRegion(region):
+    dbname = utils.read_settings('settings/settings_demo.json',"db","name")
+    conn = _connDb(dbname)
+    test  = '''SELECT 'oui'
+	FROM region_2022 r 
+	WHERE r.ncc = '{}'
+    '''.format(region)
+    df = pd.read_sql_query(test, conn)
+    return df
 
 
 def _requeteCiblage(region):
@@ -89,18 +94,15 @@ WHERE
 GROUP BY 1
 ),
 table_signalement AS (
-	SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale  FROM "010320230942_Extraction_ARA"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320230944_Extraction_BFC"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320230946_Extraction_BZH"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320230956_Extraction_Corse"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231004_Extraction_GE"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231006_Extraction_Guad"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231010_Extraction_HdF"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231014_Extraction_IdF"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231020_Extraction_Norm"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231022_Extraction_NA"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231024_Extraction_Occ"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231026_Extraction_PdL"
+	SELECT 
+    declarant_organismendeg_finess, 
+    survenue_du_cas_en_collectivitendeg_finess,
+    date_de_reception, reclamation, 
+    declarant_type_etablissement_si_esems, 
+    ceci_est_un_eigs, 
+    famille_principale, 
+    nature_principale  
+    FROM all_sivss
 ),
 -- info signalement
 sign as (
@@ -327,11 +329,11 @@ GROUP BY code_finess
 )
 SELECT 
 --identfication de l'établissement
-	r.reg as Region,
+	r.ncc as Region,
 	d.dep as "Code dép",
 	d.ncc AS "Département",
-	tf.finess as "FINESS géographique",
 	tf.categ_lib as Catégorie,
+    tf.finess as "FINESS géographique",
 	tf.rs as "Raison sociale ET",
 	tf.ej_finess as "FINESS juridique",
 	tf.ej_rs as "Raison sociale EJ",
@@ -357,23 +359,23 @@ SELECT
 	ROUND(chpr."Produits du compte 70") AS "Produits du compte 70",
 	ROUND(chpr."Total des produits (hors c/775, 777, 7781 et 78)") AS "Total des produits (hors c/775, 777, 7781 et 78)",
 	"" as "Saisie des indicateurs du TDB MS (campagne 2022)",
-	d2.taux_dabsenteisme_hors_formation_en_ as "Taux d'absentéisme 2019",
-	etra2.taux_dabsenteisme_hors_formation_en_ as "Taux d'absentéisme 2020",
-	etra.taux_dabsenteisme_hors_formation_en_ as "Taux d'absentéisme 2021",
-	ROUND((d2.taux_dabsenteisme_hors_formation_en_ + etra2.taux_dabsenteisme_hors_formation_en_ + etra.taux_dabsenteisme_hors_formation_en_)/3 ,2) as "Absentéisme moyen sur la période 2019-2021",
-	d2.taux_de_rotation_des_personnels_en_  as "Taux de rotation du personnel titulaire 2019",
-	etra2.taux_de_rotation_des_personnels as "Taux de rotation du personnel titulaire 2020",
-	etra.taux_de_rotation_des_personnels as "Taux de rotation du personnel titulaire 2021",
-	ROUND((d2.taux_de_rotation_des_personnels_en_ + etra2.taux_de_rotation_des_personnels + etra.taux_de_rotation_des_personnels)/3, 2) as "Rotation moyenne du personnel sur la période 2019-2021",
+	d2.taux_dabsenteisme_hors_formation_en_ /100 as "Taux d'absentéisme 2019",
+	etra2.taux_dabsenteisme_hors_formation_en_ /100 as "Taux d'absentéisme 2020",
+	etra.taux_dabsenteisme_hors_formation_en_ /100 as "Taux d'absentéisme 2021",
+	ROUND((d2.taux_dabsenteisme_hors_formation_en_ + etra2.taux_dabsenteisme_hors_formation_en_ + etra.taux_dabsenteisme_hors_formation_en_)/(3*100) ,4) as "Absentéisme moyen sur la période 2019-2021",
+	d2.taux_de_rotation_des_personnels_en_ /100 as "Taux de rotation du personnel titulaire 2019",
+	etra2.taux_de_rotation_des_personnels /100 as "Taux de rotation du personnel titulaire 2020",
+	etra.taux_de_rotation_des_personnels /100 as "Taux de rotation du personnel titulaire 2021",
+	ROUND((d2.taux_de_rotation_des_personnels_en_ + etra2.taux_de_rotation_des_personnels + etra.taux_de_rotation_des_personnels)/(3*100), 4) as "Rotation moyenne du personnel sur la période 2019-2021",
 	d2.taux_detp_vacants_en_ as "ETP vacants 2019",
 	etra2.taux_detp_vacants as "ETP vacants 2020",
 	etra.taux_detp_vacants as "ETP vacants 2021",
 	etra.dont_taux_detp_vacants_concernant_la_fonction_soins as "dont fonctions soins 2021",
 	etra.dont_taux_detp_vacants_concernant_la_fonction_socio_educative as "dont fonctions socio-éducatives 2021", 
-	d3.taux_de_prestations_externes_sur_les_prestations_directes_en_ as "Taux de prestations externes sur les prestations directes 2019",
-	etra2.taux_de_prestations_externes_sur_les_prestations_directes as "Taux de prestations externes sur les prestations directes 2020", 
-	etra.taux_de_prestations_externes_sur_les_prestations_directes as "Taux de prestations externes sur les prestations directes 2021",
-	ROUND((d3.taux_de_prestations_externes_sur_les_prestations_directes_en_ + etra2.taux_de_prestations_externes_sur_les_prestations_directes + etra.taux_de_prestations_externes_sur_les_prestations_directes)/3 ,2) as "Taux moyen de prestations externes sur les prestations directes",
+	d3.taux_de_prestations_externes_sur_les_prestations_directes_en_ /100 as "Taux de prestations externes sur les prestations directes 2019",
+	etra2.taux_de_prestations_externes_sur_les_prestations_directes /100 as "Taux de prestations externes sur les prestations directes 2020", 
+	etra.taux_de_prestations_externes_sur_les_prestations_directes /100 as "Taux de prestations externes sur les prestations directes 2021",
+	ROUND((d3.taux_de_prestations_externes_sur_les_prestations_directes_en_ + etra2.taux_de_prestations_externes_sur_les_prestations_directes + etra.taux_de_prestations_externes_sur_les_prestations_directes)/(3*100) ,4) as "Taux moyen de prestations externes sur les prestations directes",
 	ROUND(d3.nombre_de_personnes_accompagnees_dans_leffectif_au_3112/d3.nombre_detp_reel_au_3112, 2) as "Nombre total d'ETP par usager en 2019",
 	ROUND((etra2.etp_directionencadrement + etra2.etp_administration_gestion + etra2.etp_services_generaux + etra2.etp_restauration + etra2."etp_socio-educatif" + etra2.etp_paramedical + etra2.etp_psychologue + etra2.etp_ash + etra2.etp_medical + etra2.etp_personnel_education_nationale + etra2.etp_autres_fonctions)/etra2.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) as "Nombre total d'ETP par usager en 2020",
 	ROUND((etra.etp_directionencadrement + etra.etp_administration_gestion + etra.etp_services_generaux + etra.etp_restauration + etra."etp_socio-educatif" + etra.etp_paramedical + etra.etp_psychologue + etra.etp_ash + etra.etp_medical + etra.etp_personnel_education_nationale + etra.etp_autres_fonctions)/etra.nombre_de_personnes_accompagnees_dans_leffectif_au_3112, 2) as "Nombre total d'ETP par usager en 2021",
@@ -382,8 +384,8 @@ SELECT
 	ROUND(etra."-_dont_nombre_detp_reels_de_medecin_coordonnateur", 2) as "dont médecin coordonnateur",
 	ROUND(etra.etp_directionencadrement + etra.etp_administration_gestion + etra.etp_services_generaux + etra.etp_restauration + etra."etp_socio-educatif" + etra.etp_paramedical + etra.etp_psychologue + etra.etp_ash + etra.etp_medical + etra.etp_personnel_education_nationale + etra.etp_autres_fonctions, 2) as "Total du nombre d'ETP",
 	rs.nb_recla as "Nombre de réclamations sur la période 2018-2022",
-	ROUND(rs.nb_recla / ccta.somme_de_capacite_autorisee_totale_, 2) as "Rapport réclamations / capacité",
-	rs."Hôtellerie-locaux-restauration" as "Recla IGAS : Hôtellerie-locaux-restauration",
+	ROUND(rs.nb_recla / ccta.somme_de_capacite_autorisee_totale_, 4) as "Rapport réclamations / capacité",
+	rs."Hôtellerie-locaux-restauration" + 0 as "Recla IGAS : Hôtellerie-locaux-restauration",
 	rs."Problème d?organisation ou de fonctionnement de l?établissement ou du service" as "Recla IGAS : Problème d’organisation ou de fonctionnement de l’établissement ou du service",
 	rs."Problème de qualité des soins médicaux" as "Recla IGAS : Problème de qualité des soins médicaux",
 	rs."Problème de qualité des soins paramédicaux" as "Recla IGAS : Problème de qualité des soins paramédicaux",
@@ -420,7 +422,7 @@ FROM
 	LEFT JOIN diamantç2019_2 d3 on SUBSTRING(d3.finess,1,9) = tf.finess
 	LEFT JOIN recla_signalement rs on rs.finess = tf.finess
 	LEFT JOIN inspections i on i.finess = tf.finess
-WHERE r.reg = {}
+WHERE r.reg = '{}'
     '''.format(region)
     return requeteCiblage
  
@@ -509,18 +511,15 @@ FROM "export-tdbesms-2021-region-agg"
 , 
 -- SIVSS
 sivss_agg AS (
-	SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale  FROM "010320230942_Extraction_ARA"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320230944_Extraction_BFC"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320230946_Extraction_BZH"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320230956_Extraction_Corse"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231004_Extraction_GE"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231006_Extraction_Guad"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231010_Extraction_HdF"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231014_Extraction_IdF"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231020_Extraction_Norm"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231022_Extraction_NA"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231024_Extraction_Occ"
-	UNION SELECT declarant_organismendeg_finess, survenue_du_cas_en_collectivitendeg_finess, date_de_reception, reclamation, declarant_type_etablissement_si_esems, ceci_est_un_eigs, famille_principale, nature_principale FROM "010320231026_Extraction_PdL"
+	SELECT 
+    declarant_organismendeg_finess, 
+    survenue_du_cas_en_collectivitendeg_finess,
+    date_de_reception, reclamation, 
+    declarant_type_etablissement_si_esems, 
+    ceci_est_un_eigs, 
+    famille_principale, 
+    nature_principale  
+    FROM all_sivss
 ),
 signalements_agg AS (
 	SELECT 
@@ -595,11 +594,11 @@ FROM signalements_agg)
 -- test nb lignes stops here part 1/2, go below for the 2nd part
 SELECT
 --	identfication de l'établissement
-r.reg AS "Region",
+r.ncc AS "Region",
 d.dep AS "Code dép",
 d.ncc AS "Département",
-tf.finess AS "FINESS géographique",
 tf.categ_lib AS "Catégorie",
+tf.finess AS "FINESS géographique",
 tf.rs AS "Raison sociale ET",
 tf.ej_finess AS "FINESS juridique",
 tf.ej_rs AS "Raison sociale EJ",
@@ -683,7 +682,7 @@ LEFT JOIN signalement_clean sc on sc.finess = tf.finess
 --		) identification
 -- test nb lignes stops here part2/2
 -- FILTRE REGION
-WHERE r.reg = {}
+WHERE r.reg = '{}'
 ;
     '''.format(region)
     return requeteControle
