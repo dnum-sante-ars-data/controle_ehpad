@@ -26,7 +26,7 @@ def __main__(args):
     elif args.commande == "export":
         _createExport(region = args.region)
     elif args.commande == "all":
-        _allFunctions()  
+        _allFunctions(region = args.region)  
     return
 
 
@@ -56,7 +56,7 @@ def _createCsv():
             elif inputFileName.split('.')[-1].lower()=='csv':
                 outputExcel = inputFilePath.split('.')[0]+'.xlsx'
                 df = pd.read_csv(inputFilePath, sep=';', encoding='latin-1', low_memory=(False))
-                df.to_excel(outputExcel)
+                df.to_excel(outputExcel, encoding='UTF-8')
                 df2 = pd.read_excel(outputExcel)
                 df2.to_csv(outputFilePath, index = None, header=True, sep=';', encoding='UTF-8')
                 print('added csv file: {}'.format(inputFileName))
@@ -86,11 +86,11 @@ def _createExport(region):
     _export(region, df_ciblage, df_controle)
     return
 
-def _allFunctions():
+def _allFunctions(region):
     _exeDbInit()
     _createCsv()
     _loadCsvToDb()
-    _createExport()
+    _createExport(region)
     return
 
 # Initialisation du parsing
