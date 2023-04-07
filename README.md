@@ -36,6 +36,7 @@ Pour l'utiliser il faut appeler les commandes mentionnées ci-dessous et elles p
 
 # Prérequis
 Pour les données dans input : 
+* les fichiers doivent être organisés par dossier, un dossier par source.
 * les csv doivent être avoir comme séparateur ';'
 * les fichiers excel et csv doivent avoir le titre des colonnes sur la première, aucune colonne vide avant.
 * les settings présents dans settings.demo : 
