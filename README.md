@@ -17,7 +17,6 @@ _ modules
         init_db.py
     |_ transform
         transform.py
-        transform_query.json
     |_ export
         export.py
 _ utils
@@ -28,17 +27,24 @@ _ settings
 
 
 # Fonctionnalités du script
-... à remplir
+Ce script permet de générer un fichier excel qui contient les données de ciblage et de controle des établissements de santé.
+Pour l'utiliser il faut appeler les commandes mentionnées ci-dessous et elles permettent:
+_ create_csv : de créer un csv pour chacun des fichiers déposé dans input
+_ init_db : initialise la base de donné
+_ load_csv :  charge chaque csv comme une table
+_ export : exécute les requêtes sql permettant de générer le fichier d'export pour la région demandée et renvoie l'export dans output avec 1 sheet ciblage et 1 sheet controle.
 
 # Prérequis
-... données dans input : format, règles etc. 
-... settings à créer sur base de settings.demo
-
-## data/input/diamant
-* 
+Pour les données dans input : 
+_ les csv doivent être avoir comme séparateur ';'
+_ les fichiers excel et csv doivent avoir le titre des colonnes sur la première, aucune colonne vide avant.
+_ les settings présents dans settings.demo : 
+    |_ le nom de la base de données
+    |_ les noms de régions à afficher pour l'output
 
 # Commandes du script
-python main.py init_db
-python main.py transform
-python main.py export
-python main.py all
+python main.py create_csv
+python main.py init_database
+python main.py load_csv
+python main.py export [code_region]
+python main.py all [code_region]
