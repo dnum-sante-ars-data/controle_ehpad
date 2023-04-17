@@ -10,5 +10,12 @@
             "ncc": ["GUADELOUPE", "MARTINIQUE", "GUYANE", "LA REUNION", "MAYOTTE", "ILE DE FRANCE", "CENTRE VAL DE LOIRE","BOURGOGNE FRANCHE COMTE", "NORMANDIE", "HAUTS DE FRANCE", "GRAND EST", "PAYS DE LA LOIRE", "BRETAGNE","NOUVELLE AQUITAINE", "OCCITANIE", "AUVERGNE RHONE ALPES", "PROVENCE ALPES COTE D AZUR", "CORSE"],
             "nom": ["GUAD", "MART", "GUY", "REU", "MAY", "IDF", "CVL", "BFC", "NORM", "HDF", "GE", "PDL", "BRET", "NA", "OCC","ARA", "PACA", "COR"]
         }
+    ],
+    "sftp": [
+        {
+            "url": "prod18-ars-diamant.integra.fr",
+            "username": "DNUM",
+            "passphrase": "01062021@beD"
+        }
     ]
 }
