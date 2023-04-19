@@ -8,7 +8,9 @@
 !data/input/cnsa/demo.xlsx
 !data/input/diamant/demo.xlsx
 !data/input/insee/demo.csv
+!data/input/errd/demo.xlsx
 !data/input/sirec/demo.xlsx
+!data/input/sicea/demo.xlsx
 !data/input/sivss/demo.xlsx
 !data/input/finess/demo.xlsx
 !data/to_csv/demo.csv
