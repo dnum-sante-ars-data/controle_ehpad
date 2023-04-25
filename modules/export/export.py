@@ -32,3 +32,6 @@ def _export(region, df_ciblage, df_controle):
     writer.close()
     print('export créé : {}_{}.xlsx'.format(_outputName(region),date_string))
     return
+
+
+    

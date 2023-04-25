@@ -15,6 +15,7 @@ from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
 from modules.transform.transform import _executeTransform
 from modules.export.export import _export
+from modules.init_db.sftp import excelToSFTP
 
 def __main__(args):
     if args.commande == "create_csv":
@@ -84,6 +85,7 @@ def _loadCsvToDb():
 def _createExport(region):
     df_ciblage, df_controle = _executeTransform(region)
     _export(region, df_ciblage, df_controle)
+    excelToSFTP(region)
     return
 
 def _allFunctions(region):
