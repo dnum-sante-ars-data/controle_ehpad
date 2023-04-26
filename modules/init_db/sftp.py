@@ -17,6 +17,7 @@ def sftpInfo():
     url = data["sftp"][0]["url"]
     username = data["sftp"][0]["username"]
     passphrase =  data["sftp"][0]["passphrase"]
+    print('{}, {}'.format(url,username))
     return url, username, passphrase
 
 
@@ -29,21 +30,28 @@ def sftpInfo():
 def excelToSFTP(region):
     # Informations de connexion SFTP
     hostname, username, passphrase = sftpInfo()
-
+    paramiko.util.log_to_file("paramiko.log")
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    print('création du client')
+    ssh.connect(hostname, username=username, password=passphrase)
     # Create an SFTP client object
-    client = paramiko.SFTPClient.from_transport(
-        paramiko.Transport((hostname, 22))
-    )
+    #client = paramiko.SFTPClient.from_transport(
+    #    paramiko.Transport((hostname, 22))
+    #)
     print('Ouverture de la connexion SFTP')
     # Authenticate with the server
-    client.connect(username=username, password=passphrase)
+    #client.connect(username=username, password=passphrase)
     date_string = datetime.today().strftime('%d%m%Y') 
-    local_path = '/data/output/{}_{}.xlsx'.format(_outputName(region),date_string)
-    remote_path = '/SCN_BDD/SIREC/{}_{}.xlsx'.format(_outputName(region),date_string)
-    client.put(local_path, remote_path)
+    localpath = 'data/output/{}_{}.xlsx'.format(_outputName(region),date_string)
+    remotepath = '/SCN_BDD/SIREC/{}_{}.xlsx'.format(_outputName(region),date_string)
+    sftp = ssh.open_sftp()
+    print('sftp open')
+    sftp.put(localpath, remotepath)
+    #client.put(local_path, remote_path)
     print('Fichier {}_{}.xlsx déposé en dans /SCN_BDD/SIREC'.format(_outputName(region),date_string))
     # Close the SFTP client connection
-    client.close()
+    #client.close()
     print('Fermeture de la connexion SFTP')
     return 
 
