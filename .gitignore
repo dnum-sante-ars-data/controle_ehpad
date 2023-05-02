@@ -4,5 +4,5 @@
 *.sqlite
 *settings/settings.json
 !data/database/demo.db
-!/*_demo.csv
-!/*_demo.xlsx
+!*_demo.csv
+!*_demo.xlsx
