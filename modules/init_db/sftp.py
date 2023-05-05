@@ -81,5 +81,25 @@ sftp.put(local_file_path, remote_file_path)
 # Fermer la connexion SFTP
 sftp.close()'''
 
-
+def sftpToLocal():
+    # Informations de connexion SFTP
+    hostname, username, passphrase = sftpInfo()
+    paramiko.util.log_to_file("paramiko.log")
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    print('création du client')
+    ssh.connect(hostname, username=username, password=passphrase)
+    # Create an SFTP client object
+    #client = paramiko.SFTPClient.from_transport(
+    #    paramiko.Transport((hostname, 22))
+    #)
+    print('Ouverture de la connexion SFTP')
+    sftp = ssh.open_sftp()
+    print('sftp open')
+    path = "/SCN_BDD/"
+    liste = ["ATIH","CNAM","CNSA","DIAMANT", "ERRD", "FINESS", "INSEE", "SICEA", "SIREC", "SIVSS"]
+    localpath = 'data/output/{}_{}.xlsx'.format(_outputName(region),date_string)
+    remotepath = '/SCN_BDD/SIREC/{}_{}.xlsx'.format(_outputName(region),date_string)
+    sftp.put(localpath, remotepath)
+    return
 

@@ -197,7 +197,7 @@ SELECT
 FROM reclamations_mars20_mars2023 se
 WHERE 
 	se.ndeg_finessrpps  IS NOT NULL
-	AND se.Signalement = 'Non'
+	AND (se.Signalement = 'Non' or se.Signalement IS NULL)
 GROUP BY 1
 ),
 -- Motig IGAS
@@ -218,7 +218,7 @@ SELECT
 	SUM(IIF(se.motifs_igas like '%COVID-19%',1,0)) as "COVID-19"
 FROM reclamations_mars20_mars2023 se
 WHERE 
-	se.signalement = 'Non'
+	(se.Signalement = 'Non' or se.Signalement IS NULL)
 	AND se.ndeg_finessrpps  IS NOT NULL
 GROUP BY 1
 ),
@@ -689,7 +689,7 @@ SELECT
 FROM reclamations_mars20_mars2023 se
 WHERE 
 	se.ndeg_finessrpps  IS NOT NULL
-	AND se.Signalement = 'Non'
+	AND (se.Signalement = 'Non' or se.Signalement IS NULL)
 GROUP BY 1
 ),
 -- Motig IGAS
@@ -710,7 +710,7 @@ SELECT
 	SUM(IIF(se.motifs_igas like '%COVID-19%',1,0)) as "COVID-19"
 FROM reclamations_mars20_mars2023 se
 WHERE 
-	se.signalement = 'Non'
+	(se.Signalement = 'Non' or se.Signalement IS NULL)
 	AND se.ndeg_finessrpps  IS NOT NULL
 GROUP BY 1
 ),
@@ -1273,7 +1273,7 @@ SELECT
 FROM reclamations_mars20_mars2023 se
 WHERE 
 	se.ndeg_finessrpps  IS NOT NULL
-	AND se.signalement = 'Non'
+	AND (se.Signalement = 'Non' or se.Signalement IS NULL)
 GROUP BY 1
 ),
 -- Motig IGAS
@@ -1294,7 +1294,7 @@ SELECT
 	SUM(IIF(se.motifs_igas like '%COVID-19%',1,0)) as "COVID-19"
 FROM reclamations_mars20_mars2023 se
 WHERE 
-	se.signalement = 'Non'
+	(se.Signalement = 'Non' or se.Signalement IS NULL)
 	AND se.ndeg_finessrpps  IS NOT NULL
 GROUP BY 1
 ),
@@ -1735,7 +1735,7 @@ SELECT
 FROM reclamations_mars20_mars2023 se
 WHERE 
 	se.ndeg_finessrpps  IS NOT NULL
-	AND se.Signalement = 'Non'
+	AND (se.Signalement = 'Non' or se.Signalement IS NULL)
 GROUP BY 1
 ),
 -- Motig IGAS
@@ -1756,7 +1756,7 @@ SELECT
 	SUM(IIF(se.motifs_igas like '%COVID-19%',1,0)) as "COVID-19"
 FROM reclamations_mars20_mars2023 se
 WHERE 
-	se.signalement = 'Non'
+	(se.Signalement = 'Non' or se.Signalement IS NULL)
 	AND se.ndeg_finessrpps  IS NOT NULL
 GROUP BY 1
 ),
