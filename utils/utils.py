@@ -103,7 +103,7 @@ def _concatSignalement():
     #créer une liste avec les noms de table de signalement
     folderPath = 'data/input/sivss'
     allSignalFiles =  listdir(folderPath)
-    allSignalFiles.remove('demo.xlsx')
+    #allSignalFiles.remove('demo.xlsx')
     checkIfPathExists('data/to_csv/all_sivss.csv')
     # create an Empty DataFrame object
     df = pd.DataFrame()

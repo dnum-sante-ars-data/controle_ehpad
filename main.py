@@ -9,6 +9,7 @@ Created on Tue Jan 17 10:30:45 2023
 
 # Modules à installer
 import argparse
+import re
 from os import listdir
 import pandas as pd 
 from modules.init_db.init_db import _initDb, _importSrcData, _connDb
@@ -25,9 +26,12 @@ def __main__(args):
     elif args.commande == "load_csv":
         _loadCsvToDb()
     elif args.commande == "export":
-        _createExport(region = args.region)
+        if  args.region == 0:
+            list_region = utils.read_settings('settings/settings_demo.json',"region","code")
+            for r in list_region:
+                _createExport(r)
     elif args.commande == "all":
-        _allFunctions(region = args.region)  
+        _allFunctions(args.region)  
     return
 
 
@@ -49,7 +53,7 @@ def _createCsv():
         for inputFileName in allFiles:
             inputFilePath = folderPath+'/'+inputFileName
             outputFilePath = 'data/to_csv/'+inputFileName.split('.')[0]+'.csv'
-            if inputFileName == 'demo.csv' or inputFileName == 'demo.xlsx':
+            if re.search('demo.csv|demo.xlsx', inputFileName):
                 print('file demo not added')
             elif inputFileName.split('.')[-1].lower()=='xlsx':
                 utils._convertXlsxToCsv(inputFilePath,outputFilePath)
@@ -92,7 +96,10 @@ def _allFunctions(region):
     _exeDbInit()
     _createCsv()
     _loadCsvToDb()
-    _createExport(region)
+    if region == 0:
+        list_region = utils.read_settings('settings/settings_demo.json',"region","code")
+        for r in list_region:
+            _createExport(r)
     return
 
 # Initialisation du parsing
