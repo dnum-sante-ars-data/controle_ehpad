@@ -455,6 +455,16 @@ SELECT
 	SUM(IIF(type_de_planification = "Programmé", 1, 0)) as "Inspection / contrôle Programmé 2023"
 FROM "ESMS export-mission-4 evts 01 03 23 v2"
 GROUP BY code_finess
+),
+communes as (
+SELECT c.com, c.dep, c.ncc  
+FROM commune_2022 c 
+WHERE c.reg IS NOT NULL
+UNION ALL
+SELECT c.com, c2.dep, c.ncc
+FROM commune_2022 c 
+	LEFT JOIN commune_2022 c2 on c.comparent = c2.com AND c2.dep IS NOT NULL
+WHERE c.reg IS NULL and c.com != c.comparent
 )
 SELECT 
 --identfication de l'établissement
@@ -533,7 +543,7 @@ SELECT
 	NULLTOZERO(i."Inspection / contrôle Programmé 2023") as "Inspection / contrôle Programmé 2023"
 FROM
 	tfiness_clean tf 
-	LEFT JOIN commune_2022 c on c.com = tf.com_code AND c.typecom = 'COM'
+	LEFT JOIN communes c on c.com = tf.com_code
 	LEFT JOIN departement_2022 d on d.dep = c.dep
 	LEFT JOIN region_2022  r on d.reg = r.reg
 	LEFT JOIN capacites_ehpad ce on ce."et-ndegfiness" = tf.finess
@@ -984,6 +994,16 @@ SELECT
 	SUM(IIF(type_de_planification = "Programmé", 1, 0)) as "Inspection / contrôle Programmé 2023"
 FROM "ESMS export-mission-4 evts 01 03 23 v2"
 GROUP BY code_finess
+),
+communes as (
+SELECT c.com, c.dep, c.ncc  
+FROM commune_2022 c 
+WHERE c.reg IS NOT NULL
+UNION ALL
+SELECT c.com, c2.dep, c.ncc
+FROM commune_2022 c 
+	LEFT JOIN commune_2022 c2 on c.comparent = c2.com AND c2.dep IS NOT NULL
+WHERE c.reg IS NULL and c.com != c.comparent
 )
 SELECT 
 --identfication de l'établissement
@@ -1118,7 +1138,7 @@ SELECT
 FROM
  --identification
 	tfiness_clean tf 
-	LEFT JOIN commune_2022 c on c.com = tf.com_code AND c.typecom = 'COM'
+	LEFT JOIN communes c on c.com = tf.com_code
 	LEFT JOIN departement_2022 d on d.dep = c.dep
 	LEFT JOIN region_2022  r on d.reg = r.reg
 	LEFT JOIN capacites_ehpad ce on ce."et-ndegfiness" = tf.finess
@@ -1504,6 +1524,16 @@ SELECT
 	SUM(IIF(type_de_planification = "Programmé", 1, 0)) as "Inspection / contrôle Programmé 2023"
 FROM "ESMS export-mission-4 evts 01 03 23 v2"
 GROUP BY code_finess
+),
+communes as (
+SELECT c.com, c.dep, c.ncc  
+FROM commune_2022 c 
+WHERE c.reg IS NOT NULL
+UNION ALL
+SELECT c.com, c2.dep, c.ncc
+FROM commune_2022 c 
+	LEFT JOIN commune_2022 c2 on c.comparent = c2.com AND c2.dep IS NOT NULL
+WHERE c.reg IS NULL and c.com != c.comparent
 )
 SELECT 
 --identfication de l'établissement
@@ -1580,7 +1610,7 @@ SELECT
 	NULLTOZERO(i."Inspection / contrôle Programmé 2023") as "Inspection / contrôle Programmé 2023"
 FROM
 	tfiness_clean tf 
-	LEFT JOIN commune_2022 c on c.com = tf.com_code AND c.typecom = 'COM'
+	LEFT JOIN communes c on c.com = tf.com_code
 	LEFT JOIN departement_2022 d on d.dep = c.dep
 	LEFT JOIN region_2022  r on d.reg = r.reg
 	LEFT JOIN capacites_ehpad ce on ce."et-ndegfiness" = tf.finess
@@ -1966,6 +1996,16 @@ SELECT
 	SUM(IIF(type_de_planification = "Programmé", 1, 0)) as "Inspection / contrôle Programmé 2023"
 FROM "ESMS export-mission-4 evts 01 03 23 v2"
 GROUP BY code_finess
+),
+communes as (
+SELECT c.com, c.dep, c.ncc  
+FROM commune_2022 c 
+WHERE c.reg IS NOT NULL
+UNION ALL
+SELECT c.com, c2.dep, c.ncc
+FROM commune_2022 c 
+	LEFT JOIN commune_2022 c2 on c.comparent = c2.com AND c2.dep IS NOT NULL
+WHERE c.reg IS NULL and c.com != c.comparent
 )
 SELECT 
 --identfication de l'établissement
@@ -2101,7 +2141,7 @@ SELECT
 FROM
  --identification
 	tfiness_clean tf 
-	LEFT JOIN commune_2022 c on c.com = tf.com_code AND c.typecom = 'COM'
+	LEFT JOIN communes c on c.com = tf.com_code
 	LEFT JOIN departement_2022 d on d.dep = c.dep
 	LEFT JOIN region_2022  r on d.reg = r.reg
 	LEFT JOIN capacites_ehpad ce on ce."et-ndegfiness" = tf.finess
