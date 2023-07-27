@@ -71,6 +71,7 @@ WITH tfiness_clean as (
 SELECT
 	IIF(LENGTH(tf_with.finess )= 8, '0'|| tf_with.finess, tf_with.finess) as finess,
 	tf_with.categ_lib,
+    tf_with.categ_code,
 	tf_with.rs,
 	IIF(LENGTH(tf_with.ej_finess )= 8, '0'|| tf_with.ej_finess, tf_with.ej_finess) as ej_finess,
 	tf_with.ej_rs,
@@ -482,8 +483,8 @@ SELECT
 	c.NCC AS "Commune",
 	IIF(LENGTH(tf.com_code) = 4, '0'|| tf.com_code, tf.com_code) AS "Code commune INSEE",
 	CASE
-        WHEN ce.total_heberg_comp_inter_places_autorisees IS NOT NULL
-            THEN CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_jour_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_nuit_places_autorisees as INTEGER)
+        WHEN tf.categ_code = 500
+            THEN CAST(NULLTOZERO(ce.total_heberg_comp_inter_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_jour_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_nuit_places_autorisees) as INTEGER)
         ELSE CAST(ccta.somme_de_capacite_autorisee_totale_ as INTEGER)
     END as "Capacité totale autorisée",
 	CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) as "HP Total auto",
@@ -577,6 +578,7 @@ WITH tfiness_clean as (
 SELECT
 	IIF(LENGTH(tf_with.finess )= 8, '0'|| tf_with.finess, tf_with.finess) as finess,
 	tf_with.categ_lib,
+    tf_with.categ_code,
 	tf_with.rs,
 	IIF(LENGTH(tf_with.ej_finess )= 8, '0'|| tf_with.ej_finess, tf_with.ej_finess) as ej_finess,
 	tf_with.ej_rs,
@@ -1026,8 +1028,8 @@ SELECT
 	IIF(LENGTH(tf.com_code) = 4, '0'|| tf.com_code, tf.com_code) AS "Code commune INSEE",
 	--	caractéristiques ESMS
 	CASE
-        WHEN ce.total_heberg_comp_inter_places_autorisees IS NOT NULL
-            THEN CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_jour_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_nuit_places_autorisees as INTEGER)
+        WHEN tf.categ_code = 500
+            THEN CAST(NULLTOZERO(ce.total_heberg_comp_inter_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_jour_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_nuit_places_autorisees) as INTEGER)
         ELSE CAST(ccta.somme_de_capacite_autorisee_totale_ as INTEGER)
     END as "Capacité totale autorisée",
 	CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) as "HP Total auto",
@@ -1175,6 +1177,7 @@ WITH tfiness_clean as (
 SELECT
 	IIF(LENGTH(tf_with.finess )= 8, '0'|| tf_with.finess, tf_with.finess) as finess,
 	tf_with.categ_lib,
+    tf_with.categ_code,
 	tf_with.rs,
 	IIF(LENGTH(tf_with.ej_finess )= 8, '0'|| tf_with.ej_finess, tf_with.ej_finess) as ej_finess,
 	tf_with.ej_rs,
@@ -1559,8 +1562,8 @@ SELECT
 	c.NCC AS "Commune",
 	IIF(LENGTH(tf.com_code) = 4, '0'|| tf.com_code, tf.com_code) AS "Code commune INSEE",
 	CASE
-        WHEN ce.total_heberg_comp_inter_places_autorisees IS NOT NULL
-            THEN CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_jour_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_nuit_places_autorisees as INTEGER)
+        WHEN tf.categ_code = 500
+            THEN CAST(NULLTOZERO(ce.total_heberg_comp_inter_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_jour_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_nuit_places_autorisees) as INTEGER)
         ELSE CAST(ccta.somme_de_capacite_autorisee_totale_ as INTEGER)
     END as "Capacité totale autorisée",
 	CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) as "HP Total auto",
@@ -1651,6 +1654,7 @@ WITH tfiness_clean as (
 SELECT
 	IIF(LENGTH(tf_with.finess )= 8, '0'|| tf_with.finess, tf_with.finess) as finess,
 	tf_with.categ_lib,
+    tf_with.categ_code,
 	tf_with.rs,
 	IIF(LENGTH(tf_with.ej_finess )= 8, '0'|| tf_with.ej_finess, tf_with.ej_finess) as ej_finess,
 	tf_with.ej_rs,
@@ -2036,8 +2040,8 @@ SELECT
 	IIF(LENGTH(tf.com_code) = 4, '0'|| tf.com_code, tf.com_code) AS "Code commune INSEE",
 	--	caractéristiques ESMS
 	CASE
-        WHEN ce.total_heberg_comp_inter_places_autorisees IS NOT NULL
-            THEN CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_jour_places_autorisees as INTEGER) + CAST(ce.total_accueil_de_nuit_places_autorisees as INTEGER)
+        WHEN tf.categ_code = 500
+            THEN CAST(NULLTOZERO(ce.total_heberg_comp_inter_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_jour_places_autorisees) as INTEGER) + CAST(NULLTOZERO(ce.total_accueil_de_nuit_places_autorisees) as INTEGER)
         ELSE CAST(ccta.somme_de_capacite_autorisee_totale_ as INTEGER)
     END as "Capacité totale autorisée",
 	CAST(ce.total_heberg_comp_inter_places_autorisees as INTEGER) as "HP Total auto",

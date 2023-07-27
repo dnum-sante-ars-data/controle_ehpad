@@ -30,6 +30,8 @@ def __main__(args):
             list_region = utils.read_settings('settings/settings_demo.json',"region","code")
             for r in list_region:
                 _createExport(r)
+        else:
+            _createExport(args.region)
     elif args.commande == "all":
         _allFunctions(args.region)  
     return
@@ -100,6 +102,8 @@ def _allFunctions(region):
         list_region = utils.read_settings('settings/settings_demo.json',"region","code")
         for r in list_region:
             _createExport(r)
+    else:
+        _createExport(region)
     return
 
 # Initialisation du parsing
