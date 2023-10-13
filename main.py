@@ -16,10 +16,13 @@ from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
 from modules.transform.transform import _executeTransform
 from modules.export.export import _export
+from modules.import.import import _import
 from modules.init_db.sftp import excelToSFTP
 
 def __main__(args):
-    if args.commande == "create_csv":
+    if args.commande == "import":
+        _createCsv()
+    elif args.commande == "create_csv":
         _createCsv()
     elif args.commande == "init_database":
         _exeDbInit()

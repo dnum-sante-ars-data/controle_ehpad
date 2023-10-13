@@ -55,6 +55,28 @@ def excelToSFTP(region):
     print('Fermeture de la connexion SFTP')
     return 
 
+
+def getWithSFTP(region):
+    # Informations de connexion SFTP
+    hostname, username, passphrase = sftpInfo()
+    paramiko.util.log_to_file("paramiko.log")
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    print('création du client')
+    ssh.connect(hostname, username=username, password=passphrase)
+    print('Ouverture de la connexion SFTP')
+    date_string = datetime.today().strftime('%d%m%Y') 
+    localpath = 'data/output/{}_{}.xlsx'.format(_outputName(region),date_string)
+    remotepath = '/SCN_BDD/SIREC/{}_{}.xlsx'.format(_outputName(region),date_string)
+    sftp = ssh.open_sftp()
+    print('sftp open')
+    sftp.get(localpath, remotepath)
+    sftp.close()
+    print('Fichier {}_{}.xlsx déposé en dans /SCN_BDD/SIREC'.format(_outputName(region),date_string))
+
+    print('Fermeture de la connexion SFTP')
+    return 
+
  
 
 '''
