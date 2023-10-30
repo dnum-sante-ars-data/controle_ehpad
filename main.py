@@ -11,23 +11,24 @@ Created on Tue Jan 17 10:30:45 2023
 import argparse
 import re
 from os import listdir
-import pandas as pd 
+import pandas as pd
 from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
-from modules.transform.transform import _executeTransform
+from modules.transform.transform import _executeTransform,_init_table
 from modules.export.export import _export
-from modules.import.import import _import
-from modules.init_db.sftp import excelToSFTP
+from modules.init_db.sftp import excelToSFTP,getWithSFTP
+from modules.importSource.importSource import getData
 
 def __main__(args):
     if args.commande == "import":
-        _createCsv()
+        _import()
     elif args.commande == "create_csv":
         _createCsv()
     elif args.commande == "init_database":
         _exeDbInit()
     elif args.commande == "load_csv":
         _loadCsvToDb()
+        
     elif args.commande == "export":
         if  args.region == 0:
             list_region = utils.read_settings('settings/settings_demo.json',"region","code")
@@ -73,7 +74,6 @@ def _createCsv():
                 #shutil.copyfile(inputFilePath,outputFilePath)
     return
 
-
 def _loadCsvToDb():
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
     allCsv = listdir('data/to_csv')
@@ -89,7 +89,16 @@ def _loadCsvToDb():
             dbname
             )
         print("file added to db: {}".format(inputCsvFilePath))
+    _init_table()   
     return
+
+def _import():
+    print("import with SFTP")
+    getData()
+    return
+
+
+
 
 def _createExport(region):
     df_ciblage, df_controle = _executeTransform(region)
@@ -97,7 +106,11 @@ def _createExport(region):
     excelToSFTP(region)
     return
 
+
+
+
 def _allFunctions(region):
+    
     _exeDbInit()
     _createCsv()
     _loadCsvToDb()
@@ -108,6 +121,7 @@ def _allFunctions(region):
     else:
         _createExport(region)
     return
+
 
 # Initialisation du parsing
 parser = argparse.ArgumentParser()
