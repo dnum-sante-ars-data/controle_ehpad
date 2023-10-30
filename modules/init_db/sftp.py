@@ -22,10 +22,8 @@ def sftpInfo():
 
 
 
-
-
 # Do some operations with the SFTP client...
-# 
+#
 # client.get('remote_filename', 'local_filename')
 def excelToSFTP(region):
     # Informations de connexion SFTP
@@ -42,7 +40,7 @@ def excelToSFTP(region):
     print('Ouverture de la connexion SFTP')
     # Authenticate with the server
     #client.connect(username=username, password=passphrase)
-    date_string = datetime.today().strftime('%d%m%Y') 
+    date_string = datetime.today().strftime('%d%m%Y')
     localpath = 'data/output/{}_{}.xlsx'.format(_outputName(region),date_string)
     remotepath = '/SCN_BDD/SIREC/{}_{}.xlsx'.format(_outputName(region),date_string)
     sftp = ssh.open_sftp()
@@ -53,29 +51,40 @@ def excelToSFTP(region):
     # Close the SFTP client connection
     #client.close()
     print('Fermeture de la connexion SFTP')
-    return 
+    return
 
 
-def getWithSFTP(region):
-    # Informations de connexion SFTP
-    hostname, username, passphrase = sftpInfo()
+def getWithSFTP():
+    rep=['SIVSS','ANAP','CNAM','CNSA','ERRD','FINESS','INSEE','SIICEA']
+    hostname,username,passphrase=sftpInfo()
     paramiko.util.log_to_file("paramiko.log")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    print('création du client')
-    ssh.connect(hostname, username=username, password=passphrase)
-    print('Ouverture de la connexion SFTP')
-    date_string = datetime.today().strftime('%d%m%Y') 
-    localpath = 'data/output/{}_{}.xlsx'.format(_outputName(region),date_string)
-    remotepath = '/SCN_BDD/SIREC/{}_{}.xlsx'.format(_outputName(region),date_string)
+    ssh.connect(hostname,username=username,password=passphrase)
     sftp = ssh.open_sftp()
-    print('sftp open')
-    sftp.get(localpath, remotepath)
+    for r in rep[1:]:
+        print(r)
+        files=sftp.listdir_attr('/SCN_BDD/'+r)
+        for item in files:
+            local_path='/../../mnt/test_my_scripts/controle_ehpad_v4/controle_ehpad/data/input/'+r.lower()+'/'+item.filename
+            remote_path='/SCN_BDD/'+r+'/'+item.filename
+            try:
+                sftp.get(remote_path,local_path)
+                print(local_path)
+            except IOError as e:
+                print(e)
+    files=sftp.listdir_attr('/SCN_BDD/SIVSS')
+    for item in files:
+        local_path='/../../mnt/test_my_scripts/controle_ehpad_v4/controle_ehpad/data/input/sivss/'+item.filename
+        remote_path='/SCN_BDD/SIVSS/'+item.filename
+        if item.filename.split('_')[1] == 'Extraction':
+            try:
+                sftp.get(remote_path,local_path)
+                print(local_path)
+            except IOError as e:
+                print(e)
     sftp.close()
-    print('Fichier {}_{}.xlsx déposé en dans /SCN_BDD/SIREC'.format(_outputName(region),date_string))
-
-    print('Fermeture de la connexion SFTP')
-    return 
+    return
 
  
 

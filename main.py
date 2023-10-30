@@ -14,7 +14,7 @@ from os import listdir
 import pandas as pd
 from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
-from modules.transform.transform import _executeTransform,_init_table
+from modules.transform.transform import _executeTransform,_inittable
 from modules.export.export import _export
 from modules.init_db.sftp import excelToSFTP,getWithSFTP
 from modules.importSource.importSource import getData
@@ -89,7 +89,7 @@ def _loadCsvToDb():
             dbname
             )
         print("file added to db: {}".format(inputCsvFilePath))
-    _init_table()   
+    _inittable()   
     return
 
 def _import():
