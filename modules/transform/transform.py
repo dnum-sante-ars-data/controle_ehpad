@@ -6,7 +6,7 @@ import pandas as pd
 from modules.init_db.init_db import _connDb
 from utils import utils
 import json
-import psycopg2
+
 
 def _executeTransform(region):
     #Appeler les requetes sql
@@ -56,23 +56,27 @@ def _executeTransform(region):
 
 
 def _inittable():
+    dbname=utils.read_settings('settings/settings_demo.json',"db","name")
     conn = _connDb(dbname)
-    cursor = connection.cursor()
+    cursor = conn.cursor()
     parametres = {
     "param_N": "2023",
     "param_N_1": "2022",
     "param_N_2": "2021",
     "param_N_3": "2020",
     "param_N_4": "2019"
-	}
-    with open('requete.json',"r") as fichier:
+        }
+    with open('modules/transform/requete.json',"r") as fichier:
         data=json.load(fichier)
-        
-    for table_name, query in data["table_intermediaire"].items():
-        cursor.execute(query, parametres)
-        conn.commit()
-        print(table, "a été ajouté")
-    return 
+
+
+    for req in data["table_intermediaire"]:
+        for table,query in req.items():
+            cursor.execute(query, parametres)
+            conn.commit()
+            print(table, "a été ajouté")
+    return
+
   
        
         
