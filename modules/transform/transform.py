@@ -65,6 +65,9 @@ def _inittable():
     "param_N_2": "2021",
     "param_N_3": "2020",
     "param_N_4": "2019"
+    "param_fin_mois":"2023-09-30",
+    "param_debut_mois":"2023-10-01",
+    "param_debut_mois_N_3":"2020-10-01"
         }
     with open('modules/transform/requete.json',"r") as fichier:
         data=json.load(fichier)
