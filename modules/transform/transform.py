@@ -11,7 +11,7 @@ import psycopg2
 def _executeTransform(region):
     #Appeler les requetes sql
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
-    conn = _connDb(dbname)
+    """conn = _connDb(dbname)
     conn.create_function("NULLTOZERO", 1, _nullToZero)
     conn.create_function("MOY3", 3, _moy3)
     if region == 32:
@@ -24,6 +24,34 @@ def _executeTransform(region):
         df_ciblage = pd.read_sql_query( _requeteCiblage(region), conn)
         print('Exécution requête controle')
         df_controle = pd.read_sql_query( _requeteControle(region), conn)
+    return df_ciblage, df_controle"""
+    dbname = utils.read_settings('settings/settings_demo.json',"db","name")
+    conn = _connDb(dbname)
+    cursor = connection.cursor()
+    parametres = {
+    "region" :region, 
+    "param_N": "2023",
+    "param_N_1": "2022",
+    "param_N_2": "2021",
+    "param_N_3": "2020",
+    "param_N_4": "2019"
+	}
+    with open('requete.json',"r") as fichier:
+         data=json.load(fichier)
+        
+    if region == 32:
+        print('Exécution requête ciblage HDF')
+        df_ciblage=cursor.execute(query, parametres)
+        print('Exécution requête controle HDF')
+        query=data["requete_finale"][0]['requete_controle']
+        df_controle=cursor.execute(query, parametres) 
+    else : 
+        print('Exécution requête ciblage')
+        query=data["requete_finale"][0]['requete_ciblage']
+        df_ciblage=cursor.execute(query, parametres)
+        print('Exécution requête controle')
+        query=data["requete_finale"][0]['requete_controle']
+        df_controle=cursor.execute(query, parametres) 
     return df_ciblage, df_controle
 
 
