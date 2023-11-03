@@ -75,10 +75,10 @@ def _inittable():
 
     for req in data["table_intermediaire"]:
         for table,query in req.items():
-			query_final=query
-	    	for cle, valeur in parametres.items():
-    			cle_placeholder = "{{" + cle + "}}"
-    			query_final = query_final.replace(cle_placeholder, valeur)
+            query_final=query
+            for cle, valeur in parametres.items():
+                cle_placeholder = "{{" + cle + "}}"
+                query_final = query_final.replace(cle_placeholder, valeur)
             cursor.execute(query_final, parametres)
             conn.commit()
             print(table, "a été ajouté")
