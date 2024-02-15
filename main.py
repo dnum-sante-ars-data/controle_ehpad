@@ -62,6 +62,7 @@ def _createCsv():
             if re.search('demo.csv|demo.xlsx', inputFileName):
                 print('file demo not added')
             elif inputFileName.split('.')[-1].lower()=='xlsx':
+                print(inputFileName)
                 utils._convertXlsxToCsv(inputFilePath,outputFilePath)
                 print('converted excel file and added: {}'.format(inputFileName))
             elif inputFileName.split('.')[-1].lower()=='csv':

@@ -108,7 +108,10 @@ def _concatSignalement():
     # create an Empty DataFrame object
     df = pd.DataFrame()
     for fileName in allSignalFiles:
-        df = pd.concat([df, pd.read_excel('data/input/sivss/'+fileName)])
+        f='data/input/sivss/'+fileName
+        print(f)
+        df2=pd.read_excel(f)
+        df = pd.concat([df, df2])
     print('signalement concaténés')
     df.to_csv('data/to_csv/all_sivss.csv', index = None, header=True, sep=';', encoding='UTF-8')
     print('all_sivss.csv créé')
