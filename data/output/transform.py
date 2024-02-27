@@ -107,7 +107,7 @@ def _executeTransform(region):
 			NULLTOZERO(rs."Santé-environnementale") as "Recla IGAS : Santé-environnementale",
 			NULLTOZERO(rs."Activités d?esthétique réglementées") as "Recla IGAS : Activités d’esthétique réglementées",
 			NULLTOZERO(rs.nb_signa) as "Nombre de Signalement sur la période"""+param_N_2+"""-2023",
-			NULLTOZERO(i."ICE """+param_N+"""(réalisé)") as "ICE """+param_N+"""(réalisé)",
+			NULLTOZERO(i."ICE"""+param_N+"""(réalisé)") as "ICE"""+param_N+"""(réalisé)",
 			NULLTOZERO(i.'Inspection SUR SITE"""+param_N+"""- Déjà réalisée') as 'Inspection SUR SITE"""+param_N+"""- Déjà réalisée',
 			NULLTOZERO(i."Controle SUR PIECE"""+param_N+"""- Déjà réalisé") as "Controle SUR PIECE"""+param_N+"""- Déjà réalisé",
 			NULLTOZERO(i.'Inspection / contrôle Programmé"""+param_N_2+"""') as 'Inspection / contrôle Programmé"""+param_N_2+"""'
