@@ -16,8 +16,8 @@ from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
 from modules.transform.transform import _executeTransform,_inittable
 from modules.export.export import _export
-from modules.init_db.sftp import excelToSFTP,getWithSFTP
-from modules.importSource.importSource import getData
+from modules.sftp.sftp import excelToSFTP,getWithSFTP
+from modules.importsource.importSource import getData
 
 def __main__(args):
     if args.commande == "import":
@@ -28,9 +28,19 @@ def __main__(args):
         _exeDbInit()
     elif args.commande == "load_csv":
         _loadCsvToDb()
-        
+    elif args.commande == "transform":
+        if args.region is None:
+               print("MERCI DE RENSEIGNER LA REGION SOUHAITEE. Si VOUS VOULEZ TOUTES LES REGIONS VEUILLEZ METTRE 0")
+        elif  args.region == 0:
+            list_region = utils.read_settings('settings/settings_demo.json',"region","code")
+            for r in list_region:
+                transform(r)
+        else:
+            transform(args.region) 
     elif args.commande == "export":
-        if  args.region == 0:
+        if args.region is None:
+               print("MERCI DE RENSEIGNER LA REGION SOUHAITEE. Si VOUS VOULEZ TOUTES LES REGIONS VEUILLEZ METTRE 0")
+        elif  args.region == 0:
             list_region = utils.read_settings('settings/settings_demo.json',"region","code")
             for r in list_region:
                 _createExport(r)
@@ -100,14 +110,14 @@ def _import():
 
 
 
-
-def _createExport(region):
+def transform(region):
     df_ciblage, df_controle = _executeTransform(region)
     _export(region, df_ciblage, df_controle)
+    return 
+
+def _createExport(region):
     excelToSFTP(region)
     return
-
-
 
 
 def _allFunctions(region):
@@ -118,6 +128,7 @@ def _allFunctions(region):
     if region == 0:
         list_region = utils.read_settings('settings/settings_demo.json',"region","code")
         for r in list_region:
+            transform(r)
             _createExport(r)
     else:
         _createExport(region)
