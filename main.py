@@ -15,8 +15,7 @@ import pandas as pd
 from modules.init_db.init_db import _initDb, _importSrcData, _connDb
 from utils import utils
 from modules.transform.transform import _executeTransform,_inittable
-from modules.export.export import _export
-from modules.sftp.sftp import excelToSFTP,getWithSFTP
+from modules.export.export import _export,excelToSFTP
 from modules.importsource.importSource import getData
 
 def __main__(args):
