@@ -9,17 +9,9 @@ import pandas as pd
 from datetime import datetime
 import json
 import paramiko
-from modules.sftp.sftp import sftpInfo
+from modules.sftp.sftp import sftpInfo,_outputName
 
-def _outputName(region):
-    with open('settings/settings_demo.json') as f:
-        # Load the JSON data from the file
-        data = json.load(f)
-    # Find the index of the code equal to 2 in the "code" list
-    index = data["region"][0]["code"].index(region)
-    # Get the corresponding "nom" value from the "nom" list
-    nom = data["region"][0]["nom"][index]
-    return nom
+
 
 
 def _export(region, df_ciblage, df_controle):

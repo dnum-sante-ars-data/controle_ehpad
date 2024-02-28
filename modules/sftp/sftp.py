@@ -8,6 +8,16 @@ import json
 from modules.export.export import _outputName
 from datetime import datetime
 
+def _outputName(region):
+    with open('settings/settings_demo.json') as f:
+        # Load the JSON data from the file
+        data = json.load(f)
+    # Find the index of the code equal to 2 in the "code" list
+    index = data["region"][0]["code"].index(region)
+    # Get the corresponding "nom" value from the "nom" list
+    nom = data["region"][0]["nom"][index]
+    return nom
+
 def sftpInfo():
     with open('settings/settings_demo.json') as f:
         # Load the JSON data from the file
