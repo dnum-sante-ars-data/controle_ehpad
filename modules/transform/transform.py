@@ -587,7 +587,7 @@ def _inittable():
                     tf_with.com_code 
                     FROM 't-finess' tf_with 
                     WHERE tf_with.categ_code IN (159,160,162,165,166,172,175,176,177,178,180,182,183,184,185,186,188,189,190,191,192,193,194,195,196,197,198,199,2,200,202,205,207,208,209,212,213,216,221,236,237,238,241,246,247,249,250,251,252,253,255,262,265,286,295,343,344,354,368,370,375,376,377,378,379,381,382,386,390,393,394,395,396,397,402,411,418,427,434,437,440,441,445,446,448,449,450,453,460,461,462,464,500,501,502,606,607,608,609,614,633)"""
-    cursor.execute(tfiness_clean, parametres)
+    cursor.execute(tfiness_clean)
     conn.commit()
     print("tfiness_clean a été ajouté")
     table_recla="""CREATE TABLE table_recla AS 
@@ -595,7 +595,7 @@ def _inittable():
                    COUNT(*) as nb_recla 
                    FROM reclamations_mars20_mars2023 se 
                    WHERE se.ndeg_finessrpps  IS NOT NULL AND (se.Signalement = 'Non' or se.Signalement IS NULL) GROUP BY 1"""
-    cursor.execute(table_recla, parametres)
+    cursor.execute(table_recla)
     conn.commit()
     print("table_recla a été ajouté")
     igas="""CREATE TABLE igas AS 
@@ -614,7 +614,7 @@ def _inittable():
             FROM reclamations_mars20_mars2023 se 
             WHERE (se.Signalement = 'Non' or se.Signalement IS NULL) 
             AND se.ndeg_finessrpps  IS NOT NULL GROUP BY 1"""
-    cursor.execute(igas, parametres)
+    cursor.execute(igas)
     conn.commit()
     print("igas a été ajouté")
     table_signalement="""CREATE TABLE table_signalement AS 
@@ -627,7 +627,7 @@ def _inittable():
 						famille_principale, 
 						nature_principale  
 						FROM all_sivss"""
-    cursor.execute(table_signalement, parametres)
+    cursor.execute(table_signalement)
     conn.commit()
     print("table_signalement a été ajouté")
     sign="""CREATE TABLE sign AS 
@@ -658,7 +658,7 @@ def _inittable():
     		* 
     		FROM table_signalement tb WHERE tb.reclamation != 'Oui' ) as sub_table 
     GROUP BY 1"""
-    cursor.execute(sign, parametres)
+    cursor.execute(sign)
     conn.commit()
     print("sign a été ajouté")
     sign_HDF="""CREATE TABLE sign_HDF AS 
@@ -667,7 +667,7 @@ def _inittable():
 		FROM reclamations_mars20_mars2023 se 
 		WHERE se.signalement = 'Oui'AND se.ndeg_finessrpps  IS NOT NULL 
 		GROUP BY 1"""
-    cursor.execute(sign_HDF, parametres)
+    cursor.execute(sign_HDF)
     conn.commit()
     print("sign_HDF a été ajouté")
     recla_signalement="""CREATE TABLE recla_signalement AS 
@@ -707,7 +707,7 @@ def _inittable():
     LEFT JOIN table_recla tr on tr.finess = tfc.finess 
     LEFT JOIN igas i on i.finess = tfc.finess 
     LEFT JOIN sign s on s.finess = tfc.finess"""
-    cursor.execute(recla_signalement, parametres)
+    cursor.execute(recla_signalement)
     conn.commit()
     print("recla_signalement a été ajouté")
     clean_occupation_N_1="""CREATE TABLE clean_occupation_N_1 AS 
@@ -717,7 +717,7 @@ def _inittable():
     o3.nb_lits_occ_"""+param_N_1+""",
     o3.taux_occ_trimestre3 
     FROM occupation_"""+param_N_1+""" o3"""
-    cursor.execute(clean_occupation_N_1, parametres)
+    cursor.execute(clean_occupation_N_1)
     conn.commit()
     print("clean_occupation_N_1 a été ajouté")
     clean_occupation_N_2="""CREATE TABLE clean_occupation_N_2 AS 
@@ -727,7 +727,7 @@ def _inittable():
     o3.nb_lits_occ_"""+param_N_2+""",
     o3.taux_occ_trimestre3 
     FROM occupation_"""+param_N_2+""" o3"""
-    cursor.execute(clean_occupation_N_2, parametres)
+    cursor.execute(clean_occupation_N_2)
     conn.commit()
     print("clean_occupation_N_2 a été ajouté")
     clean_occupation_N_3="""CREATE TABLE clean_occupation_N_3 AS 
@@ -737,7 +737,7 @@ def _inittable():
     o3.nb_lits_occ_"""+param_N_3+""",
     o3.taux_occ_trimestre3 
     FROM occupation_"""+param_N_3+""" o3 """
-    cursor.execute(clean_occupation_N_3, parametres)
+    cursor.execute(clean_occupation_N_3)
     conn.commit()
     print("clean_occupation_N_3 a été ajouté")
     clean_occupation_N_4="""CREATE TABLE clean_occupation_N_4 AS 
@@ -747,7 +747,7 @@ def _inittable():
     o3.nb_lits_occ_"""+param_N_4+""",
     o3.taux_occ_trimestre3 
     FROM occupation_"""+param_N_4+""" o3"""
-    cursor.execute(clean_occupation_N_4, parametres)
+    cursor.execute(clean_occupation_N_4)
     conn.commit()
     print("clean_occupation_N_4 a été ajouté")
     
@@ -755,7 +755,7 @@ def _inittable():
     SELECT IIF(LENGTH(cta.etiquettes_de_lignes )= 8, '0'|| cta.etiquettes_de_lignes, cta.etiquettes_de_lignes) as finess, 
     cta.somme_de_capacite_autorisee_totale_ as somme_de_capacite_autorisee_totale_
     FROM capacite_totale_auto cta """
-    cursor.execute(clean_capacite_totale_auto, parametres)
+    cursor.execute(clean_capacite_totale_auto)
     conn.commit()
     print("clean_capacite_totale_auto a été ajouté")
     
@@ -763,21 +763,21 @@ def _inittable():
     SELECT IIF(LENGTH(h.finesset )= 8, '0'|| h.finesset, h.finesset) as finess,
     h.prixhebpermcs 
     FROM hebergement h"""
-    cursor.execute(clean_hebergement, parametres)
+    cursor.execute(clean_hebergement)
     conn.commit()
     print("clean_hebergement a été ajouté")
     clean_tdb_n_3="""CREATE TABLE 'clean_tdb_n_3' AS 
     SELECT IIF(LENGTH(tdb_"""+param_N_3+""".finess_geographique) = 8, '0'|| tdb_"""+param_N_3+""".finess_geographique, 
     tdb_"""+param_N_3+""".finess_geographique) as finess,* 
     FROM 'export-tdbesms-"""+param_N_3+"""-region_agg' tdb_"""+param_N_3+""" """ 
-    cursor.execute(clean_tdb_n_3, parametres)
+    cursor.execute(clean_tdb_n_3)
     conn.commit()
     print("clean_tdb_n_3 a été ajouté")
     clean_tdb_n_2="""CREATE TABLE 'clean_tdb_n_2' AS 
     SELECT IIF(LENGTH(tdb_"""+param_N_2+""".finess_geographique )= 8, '0'|| tdb_"""+param_N_2+""".finess_geographique, 
     tdb_"""+param_N_2+""".finess_geographique) as finess,* 
     FROM 'export-tdbesms-"""+param_N_2+"""-region-agg' tdb_"""+param_N_2+""""""
-    cursor.execute(clean_tdb_n_2, parametres)
+    cursor.execute(clean_tdb_n_2)
     conn.commit()
     print("clean_tdb_n_2 a été ajouté")
     correspondance="""CREATE TABLE correspondance AS 
@@ -786,7 +786,7 @@ def _inittable():
     FROM choix_errd_ca_pa_ph cecpp 
     LEFT JOIN doublons_errd_ca dou on SUBSTRING(dou.finess,1,9) = SUBSTRING('cecpp.finess_-_rs_et',1,9) AND cecpp.cadre != 'ERRD' 
     WHERE dou.finess IS NULL"""
-    cursor.execute(correspondance, parametres)
+    cursor.execute(correspondance)
     conn.commit()
     print("correspondance a été ajouté")
     grouped_errd_charges="""CREATE TABLE grouped_errd_charges AS 
@@ -794,7 +794,7 @@ def _inittable():
     SUM(ec.charges_dexploitation) as sum_charges_dexploitation 
     FROM errd_charges ec 
     GROUP BY 1"""
-    cursor.execute(grouped_errd_charges, parametres)
+    cursor.execute(grouped_errd_charges)
     conn.commit()
     print("grouped_errd_charges a été ajouté")
     grouped_errd_produitstarif="""CREATE TABLE grouped_errd_produitstarif AS 
@@ -802,7 +802,7 @@ def _inittable():
     SUM(ep.groupe_i__produits_de_la_tarification) as sum_groupe_i__produits_de_la_tarification 
     FROM errd_produitstarif ep 
     GROUP BY 1"""
-    cursor.execute(grouped_errd_produitstarif, parametres)
+    cursor.execute(grouped_errd_produitstarif)
     conn.commit()
     print("grouped_errd_produitstarif a été ajouté")
     grouped_errd_produits70="""CREATE TABLE grouped_errd_produits70 AS 
@@ -810,7 +810,7 @@ def _inittable():
     SUM(ep2.unnamed_1) as sum_produits70 
     FROM errd_produits70 ep2 
     GROUP BY 1"""
-    cursor.execute(grouped_errd_produits70, parametres)
+    cursor.execute(grouped_errd_produits70)
     conn.commit()
     print("grouped_errd_produits70 a été ajouté")
     grouped_errd_produitsencaiss="""CREATE TABLE grouped_errd_produitsencaiss AS 
@@ -818,7 +818,7 @@ def _inittable():
     SUM(ep3.produits_dexploitation) as sum_produits_dexploitation 
     FROM errd_produitsencaiss ep3 
     GROUP BY 1"""
-    cursor.execute(grouped_errd_produitsencaiss, parametres)
+    cursor.execute(grouped_errd_produitsencaiss)
     conn.commit()
     print("grouped_errd_produitsencaiss a été ajouté")
     grouped_caph_charges="""CREATE TABLE grouped_caph_charges AS 
@@ -826,7 +826,7 @@ def _inittable():
     SUM(cch.charges_dexploitation) as sum_charges_dexploitation 
     FROM caph_charges cch  
     GROUP BY 1"""
-    cursor.execute(grouped_caph_charges, parametres)
+    cursor.execute(grouped_caph_charges)
     conn.commit()
     print("grouped_caph_charges a été ajouté")
     grouped_caph_produitstarif="""CREATE TABLE grouped_caph_produitstarif AS 
@@ -834,7 +834,7 @@ def _inittable():
     SUM(cch2.groupe_i__produits_de_la_tarification) as sum_groupe_i__produits_de_la_tarification 
     FROM caph_produitstarif cch2 
     GROUP BY 1"""
-    cursor.execute(grouped_caph_produitstarif, parametres)
+    cursor.execute(grouped_caph_produitstarif)
     conn.commit()
     print("grouped_caph_produitstarif a été ajouté")
     grouped_caph_produits70="""CREATE TABLE grouped_caph_produits70 AS 
@@ -842,7 +842,7 @@ def _inittable():
     SUM(cch3.unnamed_1) as sum_produits70 
     FROM caph_produits70 cch3 
     GROUP BY 1"""
-    cursor.execute(grouped_caph_produits70, parametres)
+    cursor.execute(grouped_caph_produits70)
     conn.commit()
     print("grouped_caph_produits70 a été ajouté")
     grouped_caph_produitsencaiss="""CREATE TABLE grouped_caph_produitsencaiss AS 
@@ -850,7 +850,7 @@ def _inittable():
     SUM(cch4.produits_dexploitation) as sum_produits_dexploitation 
     FROM caph_produitsencaiss cch4 
     GROUP BY 1"""
-    cursor.execute(grouped_caph_produitsencaiss, parametres)
+    cursor.execute(grouped_caph_produitsencaiss)
     conn.commit()
     print("grouped_caph_produitsencaiss a été ajouté")
     grouped_capa_charges="""CREATE TABLE grouped_capa_charges AS 
@@ -858,7 +858,7 @@ def _inittable():
     SUM(cc.charges_dexploitation) as sum_charges_dexploitation 
     FROM capa_charges cc  
     GROUP BY 1"""
-    cursor.execute(grouped_capa_charges, parametres)
+    cursor.execute(grouped_capa_charges)
     conn.commit()
     print("grouped_capa_charges a été ajouté")
     grouped_capa_produitstarif="""CREATE TABLE grouped_capa_produitstarif AS 
@@ -866,7 +866,7 @@ def _inittable():
     SUM(cpt.produits_de_lexercice) as sum_groupe_i__produits_de_la_tarification 
     FROM capa_produitstarif cpt  
     GROUP BY 1"""
-    cursor.execute(grouped_capa_produitstarif, parametres)
+    cursor.execute(grouped_capa_produitstarif)
     conn.commit()
     print("grouped_capa_produitstarif a été ajouté")
     charges_produits="""CREATE TABLE charges_produits AS 
@@ -893,7 +893,7 @@ def _inittable():
     LEFT JOIN grouped_caph_produitsencaiss gcch4 on gcch4.finess = cor.finess AND cor.cadre = 'CA PH' 
     LEFT JOIN grouped_capa_charges gc on gc.finess = cor.finess AND cor.cadre = 'CA PA' 
     LEFT JOIN grouped_capa_produitstarif gcp on gcp.finess = cor.finess AND cor.cadre = 'CA PA'"""
-    cursor.execute(charges_produits, parametres)
+    cursor.execute(charges_produits)
     conn.commit()
     print("charges_produits a été ajouté")
     inspections="""CREATE TABLE inspections AS 
@@ -927,7 +927,7 @@ def _inittable():
                 WHERE date_reelle_visite >="""+param_debut_mois_N_3+""" AND code_finess IS NOT NULL) brut 
                 GROUP BY finess,identifiant_de_la_mission,date_provisoire_visite,date_reelle_visite,CTRL_PL_PI) brut_agg 
         GROUP BY finess"""
-    cursor.execute(inspections, parametres)
+    cursor.execute(inspections)
     conn.commit()
     print("inspections a été ajouté")
     communes="""CREATE TABLE communes AS 
@@ -938,7 +938,7 @@ def _inittable():
         FROM commune c  
         LEFT JOIN commune c2 on c.comparent = c2.com AND c2.dep IS NOT NULL 
         WHERE c.reg IS NULL and c.com != c.comparent"""
-    cursor.execute(communes, parametres)
+    cursor.execute(communes)
     conn.commit()
     print("communes a été ajouté")
     return

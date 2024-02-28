@@ -5,7 +5,6 @@ Created on Tue Apr 11 10:38:45 2023
 @author: mathieu.olivier
 """
 import json
-from modules.export.export import _outputName
 from datetime import datetime
 
 def sftpInfo():
