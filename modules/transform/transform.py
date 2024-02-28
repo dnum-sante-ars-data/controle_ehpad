@@ -107,7 +107,7 @@ def _executeTransform(region):
 			NULLTOZERO(rs."Santé-environnementale") as "Recla IGAS : Santé-environnementale",
 			NULLTOZERO(rs."Activités d?esthétique réglementées") as "Recla IGAS : Activités d’esthétique réglementées",
 			NULLTOZERO(rs.nb_signa) as "Nombre de Signalement sur la période"""+param_N_2+"""-2023",
-			NULLTOZERO(i."ICE """+param_N+"""(réalisé)") as "ICE """+param_N+"""(réalisé)",
+			NULLTOZERO(i.'ICE """+param_N_1+""" (réalisé)') as 'ICE """+param_N_1+""" (réalisé)',
 			NULLTOZERO(i.'Inspection SUR SITE"""+param_N+"""- Déjà réalisée') as 'Inspection SUR SITE"""+param_N+"""- Déjà réalisée',
 			NULLTOZERO(i."Controle SUR PIECE"""+param_N+"""- Déjà réalisé") as "Controle SUR PIECE"""+param_N+"""- Déjà réalisé",
 			NULLTOZERO(i.'Inspection / contrôle Programmé"""+param_N_2+"""') as 'Inspection / contrôle Programmé"""+param_N_2+"""'
@@ -133,7 +133,10 @@ def _executeTransform(region):
 			LEFT JOIN inspections i on i.finess = tf.finess
 		WHERE r.reg ="""+str(region)+"""
 		ORDER BY tf.finess ASC"""
-        df_ciblage=cursor.execute(query, parametres)
+        cursor.execute(query)
+        res=cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+        df_ciblage=pd.DataFrame(res,columns=columns)
         print('Exécution requête controle HDF')
         query="""SELECT 
 			r.ncc as Region,
@@ -265,7 +268,7 @@ def _executeTransform(region):
 		--	NULLTOZERO(rs."nb EI/EIG : Prise en charge psychiatrique") as "nb EI/EIG : Prise en charge psychiatrique",
 		--	NULLTOZERO(rs."nb EI/EIG : Suicide") as "nb EI/EIG : Suicide",
 		--	NULLTOZERO(rs."nb EI/EIG : Tentative de suicide") as "nb EI/EIG : Tentative de suicide",
-			NULLTOZERO(i."ICE"""+param_N+"""(réalisé)") as "ICE"""+param_N+"""(réalisé)",
+			NULLTOZERO(i.'ICE """+param_N_1+""" (réalisé)') as 'ICE """+param_N_1+""" (réalisé)',
 			NULLTOZERO(i.'Inspection SUR SITE"""+param_N+"""- Déjà réalisée') as 'Inspection SUR SITE"""+param_N+"""- Déjà réalisée',
 			NULLTOZERO(i."Controle SUR PIECE"""+param_N+"""- Déjà réalisé") as "Controle SUR PIECE"""+param_N+"""- Déjà réalisé",
 			NULLTOZERO(i.'Inspection / contrôle Programmé"""+param_N_2+"""') as 'Inspection / contrôle Programmé"""+param_N_2+"""'
@@ -293,7 +296,10 @@ def _executeTransform(region):
 			LEFT JOIN inspections i on i.finess = tf.finess
 		WHERE r.reg = '"""+str(region)+"""'
 		ORDER BY tf.finess ASC"""
-        df_controle=cursor.execute(query, parametres) 
+        cursor.execute(query)
+        res=cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+        df_controle=pd.DataFrame(res,columns=columns)  
     else : 
         print('Exécution requête ciblage')
         query="""SELECT  r.ncc as 'Region', 
@@ -397,7 +403,10 @@ def _executeTransform(region):
         LEFT JOIN inspections i on i.finess = tf.finess 
         WHERE r.reg = """+str(region)+"""
         ORDER BY tf.finess ASC"""
-        df_ciblage=cursor.execute(query, parametres)
+        cursor.execute(query)
+        res=cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+        df_ciblage=pd.DataFrame(res,columns=columns)
         print('Exécution requête controle')
         query="""SELECT 
 		--identfication de l'établissement
@@ -529,7 +538,7 @@ def _executeTransform(region):
 		NULLTOZERO(rs."nb EI/EIG : Prise en charge psychiatrique") as "nb EI/EIG : Prise en charge psychiatrique",
 		NULLTOZERO(rs."nb EI/EIG : Suicide") as "nb EI/EIG : Suicide",
 		NULLTOZERO(rs."nb EI/EIG : Tentative de suicide") as "nb EI/EIG : Tentative de suicide",
-		NULLTOZERO(i.'ICE """+param_N_1+""" (réalisé)') as "ICE"""+param_N_1+""" (réalisé)",
+		NULLTOZERO(i.'ICE """+param_N_1+""" (réalisé)') AS "ICE """+param_N_1+""" (réalisé)",
 		NULLTOZERO(i.'Inspection SUR SITE"""+param_N+"""- Déjà réalisée') as "Inspection SUR SITE"""+param_N+"""- Déjà réalisée",
 		NULLTOZERO(i."Controle SUR PIECE"""+param_N+"""- Déjà réalisé") as "Controle SUR PIECE"""+param_N+"""- Déjà réalisé",
 		NULLTOZERO(i.'Inspection / contrôle Programmé"""+param_N_2+"""') as 'Inspection / contrôle Programmé"""+param_N_2+"""'
@@ -558,7 +567,10 @@ def _executeTransform(region):
 		LEFT JOIN inspections i on i.finess = tf.finess
 	WHERE r.reg = '"""+str(region)+"""'
 	ORDER BY tf.finess ASC"""
-        df_controle=cursor.execute(query, parametres)  
+        cursor.execute(query)
+        res=cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+        df_controle=pd.DataFrame(res,columns=columns)
     return df_ciblage, df_controle
 
 

@@ -26,8 +26,10 @@ def _export(region, df_ciblage, df_controle):
     path = 'data/output/{}_{}.xlsx'.format(_outputName(region),date_string)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     writer = pd.ExcelWriter(path, engine='xlsxwriter')
-    df_ciblage.to_excel(writer, sheet_name='ciblage', index=False)
-    df_controle.to_excel(writer, sheet_name='controle', index=False)
+    df_ciblage.to_excel(writer, sheet_name='ciblage', index=False,header=True)
+    print(df_ciblage.columns.tolist())
+    df_controle.to_excel(writer, sheet_name='controle', index=False,header=True)
+    print(df_controle.columns.tolist())
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
     print('export créé : {}_{}.xlsx'.format(_outputName(region),date_string))
