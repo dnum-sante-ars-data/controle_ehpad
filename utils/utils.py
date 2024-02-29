@@ -23,7 +23,7 @@ def checkIfPathExists(file):
         print('Ancien fichier écrasé')
         
         
-def _convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
+def convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
     try:
     # Reading an excel file
     #   sheetname = getSheetName()
@@ -37,7 +37,7 @@ def _convertXlsxToCsv(inputExcelFilePath, outputCsvFilePath):
         return str(err) 
 
         
-def _convertCsvToXlsx(inputCsvFilePath, outputExcelFilePath):
+def convertCsvToXlsx(inputCsvFilePath, outputExcelFilePath):
     try:
     # Reading a csv file
     #   sheetname = getSheetName()
@@ -50,7 +50,7 @@ def _convertCsvToXlsx(inputCsvFilePath, outputExcelFilePath):
         print(err)
         return str(err)   
     
-#_convertXlsxToCsv("C:/Users/mathieu.olivier/Documents/Helios/Script_V2/input/Calcul du nombre de signalements.xlsx")
+#convertXlsxToCsv("C:/Users/mathieu.olivier/Documents/Helios/Script_V2/input/Calcul du nombre de signalements.xlsx")
 # à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
 def _csvReader(csvFilePath):
     df = pd.read_csv(csvFilePath, sep= ';', encoding='UTF-8',low_memory=False)
@@ -63,7 +63,8 @@ def _csvReader(csvFilePath):
 ### Partie nettoyage des données
 
 
-def _cleanTxt(text):
+
+def cleanTxt(text):
     try:
         text = unicode(text.lower(), 'utf-8')
     except (TypeError, NameError): # unicode is a default on python 3 
@@ -76,9 +77,9 @@ def _cleanTxt(text):
     text = re.sub('[^0-9a-zA-Z_-]', '', text) 
     return str(text)
 
-def _cleanSrcData(df):
+def cleanSrcData(df):
 # Enlever caractères spéciaux, accents, espace ( _ ) ,
-    df.columns = [ _cleanTxt(i) for i in df.columns.values.tolist()]
+    df.columns = [ cleanTxt(i) for i in df.columns.values.tolist()]
     return df
 
 def read_settings(path_in, dict, elem):
@@ -99,7 +100,7 @@ def read_settings(path_in, dict, elem):
     return param_config
 
 # Fonction pour concaténer les différentes régions de SIVSS
-def _concatSignalement():
+def concatSignalement():
     #créer une liste avec les noms de table de signalement
     folderPath = 'data/input/sivss'
     allSignalFiles =  listdir(folderPath)
