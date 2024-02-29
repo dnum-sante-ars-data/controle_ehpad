@@ -52,7 +52,7 @@ def convertCsvToXlsx(inputCsvFilePath, outputExcelFilePath):
     
 #convertXlsxToCsv("C:/Users/mathieu.olivier/Documents/Helios/Script_V2/input/Calcul du nombre de signalements.xlsx")
 # à déplacer dans utils/utils.py et à appeler dans modules/init_db/init_db.py
-def _csvReader(csvFilePath):
+def csvReader(csvFilePath):
     df = pd.read_csv(csvFilePath, sep= ';', encoding='UTF-8',low_memory=False)
     return df
 
