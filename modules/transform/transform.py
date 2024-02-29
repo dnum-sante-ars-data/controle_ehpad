@@ -950,7 +950,8 @@ def executeTransform(region):
         df_controle=pd.DataFrame(res,columns=columns)
     
     date_string = datetime.today().strftime('%d%m%Y') 
-    path = 'data/output/{}_{}.xlsx'.format(outputName(region),date_string)
+    paths=utils.get_paths("settings/settings_demo.json","to_excel")
+    path = paths['path']+'{}_{}.xlsx'.format(outputName(region),date_string)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     writer = pd.ExcelWriter(path, engine='xlsxwriter')
     df_ciblage.to_excel(writer, sheet_name='ciblage', index=False,header=True)

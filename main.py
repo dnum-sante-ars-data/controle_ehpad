@@ -58,16 +58,17 @@ def exeDbInit():
 
 def createCsv():
     # Go in all the input folders and store a csv clean version in to_csv
-    allFolders = listdir('data/input')
+    paths=utils.get_paths("settings/settings_demo.json","main")
+    allFolders = listdir(paths["input"])
     allFolders.remove('sivss')
     utils.concatSignalement()
     for folderName in allFolders:
         print("loop entrance")
-        folderPath = 'data/input/{}'.format(folderName)
+        folderPath = paths["input"]+'/{}'.format(folderName)
         allFiles =  listdir(folderPath)
         for inputFileName in allFiles:
             inputFilePath = folderPath+'/'+inputFileName
-            outputFilePath = 'data/to_csv/'+inputFileName.split('.')[0]+'.csv'
+            outputFilePath = paths["to_csv"]+inputFileName.split('.')[0]+'.csv'
             if re.search('demo.csv|demo.xlsx', inputFileName):
                 print('file demo not added')
             elif inputFileName.split('.')[-1].lower()=='xlsx':
@@ -86,12 +87,13 @@ def createCsv():
 
 def loadCsvToDb():
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
-    allCsv = listdir('data/to_csv')
+    paths=utils.get_paths("settings/settings_demo.json","main")
+    allCsv = listdir(paths["to_csv"])
     conn = connDb(dbname)
     for inputCsvFilePath in allCsv:
         importSrcData(
             utils.cleanSrcData(
-                utils.csvReader( 'data/to_csv/'+inputCsvFilePath
+                utils.csvReader( paths["to_csv"]+'/'+inputCsvFilePath
                            )
                 ),
             inputCsvFilePath.split('/')[-1].split('.')[0],

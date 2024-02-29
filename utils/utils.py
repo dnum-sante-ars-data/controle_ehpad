@@ -99,22 +99,30 @@ def read_settings(path_in, dict, elem):
     logging.info("Lecture param config" + path_in + ".")
     return param_config
 
+def get_paths(path_in, dict):
+    with open(path_in) as f:
+        dict_ret = json.load(f)
+    L_ret = dict_ret[dict]
+    return L_ret[0]
+
 # Fonction pour concaténer les différentes régions de SIVSS
 def concatSignalement():
     #créer une liste avec les noms de table de signalement
-    folderPath = 'data/input/sivss'
+    paths=utils.get_paths("settings/settings_demo.json","export")
+    folderPath = paths["folderPath"]
     allSignalFiles =  listdir(folderPath)
     #allSignalFiles.remove('demo.xlsx')
-    checkIfPathExists('data/to_csv/all_sivss.csv')
+    
+    checkIfPathExists(paths["all_sivss"])
     # create an Empty DataFrame object
     df = pd.DataFrame()
     for fileName in allSignalFiles:
-        f='data/input/sivss/'+fileName
+        f=folderPath+fileName
         print(f)
         df2=pd.read_excel(f)
         df = pd.concat([df, df2])
     print('signalement concaténés')
-    df.to_csv('data/to_csv/all_sivss.csv', index = None, header=True, sep=';', encoding='UTF-8')
+    df.to_csv(paths["all_sivss"], index = None, header=True, sep=';', encoding='UTF-8')
     print('all_sivss.csv créé')
     return
  

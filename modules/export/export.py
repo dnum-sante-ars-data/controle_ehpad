@@ -10,6 +10,7 @@ from datetime import datetime
 import json
 import paramiko
 from modules.Info.info import sftpInfo,outputName
+from utils import utils
 
 
 # Do some operations with the SFTP client...
@@ -31,8 +32,9 @@ def localToSFTP(region):
     # Authenticate with the server
     #client.connect(username=username, password=passphrase)
     date_string = datetime.today().strftime('%d%m%Y')
-    localpath = 'data/output/{}_{}.xlsx'.format(outputName(region),date_string)
-    remotepath = '/SCN_BDD/SIREC/{}_{}.xlsx'.format(outputName(region),date_string)
+    paths=utils.get_paths("settings/settings_demo.json","export")
+    localpath = paths["localpath"]+'{}_{}.xlsx'.format(outputName(region),date_string)
+    remotepath = paths["localpath"]+'{}_{}.xlsx'.format(outputName(region),date_string)
     sftp = ssh.open_sftp()
     print('sftp open')
     sftp.put(localpath, remotepath)
