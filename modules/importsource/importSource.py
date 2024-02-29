@@ -1,9 +1,8 @@
-from modules.sftp.sftp import sftpInfo
+from modules.Info.info import sftpInfo
 from py7zr import SevenZipFile
 import os 
 import gnupg
 import paramiko
-
 
 def getWithSFTP():
     rep=['SIVSS','ANAP','CNAM','CNSA','ERRD','FINESS','INSEE','SIICEA']
@@ -37,8 +36,8 @@ def getWithSFTP():
     sftp.close()
     return
 
-def getData(filetype):
-    print("import Source")
+def decryptFile(filetype):
+    print("decrypt file")
     getWithSFTP()
     dir_='/mnt/test_my_scripts/controle_ehpad_v4/controle_ehpad/data/input/sivss/'
     files=os.listdir(dir_)
@@ -57,8 +56,6 @@ def getData(filetype):
                     
             print(f+' '+status.status)
     return 
-
-
 
 
 

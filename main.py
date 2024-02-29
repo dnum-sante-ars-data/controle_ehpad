@@ -12,21 +12,21 @@ import argparse
 import re
 from os import listdir
 import pandas as pd
-from modules.init_db.init_db import _initDb, _importSrcData, _connDb
+from modules.init_db.init_db import initDb, importSrcData, connDb
 from utils import utils
-from modules.transform.transform import _executeTransform,_inittable
-from modules.export.export import _export,excelToSFTP
-from modules.importsource.importSource import getData
+from modules.transform.transform import executeTransform,inittable
+from modules.export.export import localToSFTP
+from modules.importsource.importSource import decryptFile
 
 def __main__(args):
     if args.commande == "import":
-        _import()
+        importData()
     elif args.commande == "create_csv":
-        _createCsv()
+        createCsv()
     elif args.commande == "init_database":
-        _exeDbInit()
+        exeDbInit()
     elif args.commande == "load_csv":
-        _loadCsvToDb()
+        loadCsvToDb()
     elif args.commande == "transform":
         if args.region is None:
                print("MERCI DE RENSEIGNER LA REGION SOUHAITEE. Si VOUS VOULEZ TOUTES LES REGIONS VEUILLEZ METTRE 0")
@@ -42,25 +42,25 @@ def __main__(args):
         elif  args.region == 0:
             list_region = utils.read_settings('settings/settings_demo.json',"region","code")
             for r in list_region:
-                _createExport(r)
+                createExport(r)
         else:
-            _createExport(args.region)
+            createExport(args.region)
     elif args.commande == "all":
-        _allFunctions(args.region)  
+        allFunctions(args.region)  
     return
 
 
-def _exeDbInit():
+def exeDbInit():
     # Opening JSON file
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
-    _initDb(dbname)
+    initDb(dbname)
     return
 
-def _createCsv():
+def createCsv():
     # Go in all the input folders and store a csv clean version in to_csv
     allFolders = listdir('data/input')
     allFolders.remove('sivss')
-    utils._concatSignalement()
+    utils.concatSignalement()
     for folderName in allFolders:
         print("loop entrance")
         folderPath = 'data/input/{}'.format(folderName)
@@ -72,7 +72,7 @@ def _createCsv():
                 print('file demo not added')
             elif inputFileName.split('.')[-1].lower()=='xlsx':
                 print(inputFileName)
-                utils._convertXlsxToCsv(inputFilePath,outputFilePath)
+                utils.convertXlsxToCsv(inputFilePath,outputFilePath)
                 print('converted excel file and added: {}'.format(inputFileName))
             elif inputFileName.split('.')[-1].lower()=='csv':
                 outputExcel = inputFilePath.split('.')[0]+'.xlsx'
@@ -84,14 +84,14 @@ def _createCsv():
                 #shutil.copyfile(inputFilePath,outputFilePath)
     return
 
-def _loadCsvToDb():
+def loadCsvToDb():
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
     allCsv = listdir('data/to_csv')
-    conn = _connDb(dbname)
+    conn = connDb(dbname)
     for inputCsvFilePath in allCsv:
-        _importSrcData(
-            utils._cleanSrcData(
-                utils._csvReader( 'data/to_csv/'+inputCsvFilePath
+        importSrcData(
+            utils.cleanSrcData(
+                utils.csvReader( 'data/to_csv/'+inputCsvFilePath
                            )
                 ),
             inputCsvFilePath.split('/')[-1].split('.')[0],
@@ -99,38 +99,37 @@ def _loadCsvToDb():
             dbname
             )
         print("file added to db: {}".format(inputCsvFilePath))
-    _inittable()   
+    inittable()   
     return
 
-def _import():
+def importData():
     print("import with SFTP")
-    getData()
+    decryptFile()
     return
 
 
 
 def transform(region):
-    df_ciblage, df_controle = _executeTransform(region)
-    _export(region, df_ciblage, df_controle)
+    executeTransform(region)
     return 
 
-def _createExport(region):
-    excelToSFTP(region)
+def createExport(region):
+    localToSFTP(region)
     return
 
 
-def _allFunctions(region):
+def allFunctions(region):
     
-    _exeDbInit()
-    _createCsv()
-    _loadCsvToDb()
+    exeDbInit()
+    createCsv()
+    loadCsvToDb()
     if region == 0:
         list_region = utils.read_settings('settings/settings_demo.json',"region","code")
         for r in list_region:
             transform(r)
-            _createExport(r)
+            createExport(r)
     else:
-        _createExport(region)
+        createExport(region)
     return
 
 
