@@ -3,13 +3,15 @@
 import json
 from os import listdir
 import pandas as pd
-from modules.init_db.init_db import _connDb
+from modules.init_db.init_db import connDb
 from utils import utils
 import json
+from modules.Info.info import outputName
+from datetime import datetime
 
-def _inittable():
+def inittable():
     dbname=utils.read_settings("settings/settings_demo.json","db","name")
-    conn = _connDb(dbname)
+    conn = connDb(dbname)
     cursor = conn.cursor()
     with open('settings/settings_demo.json') as f:
         # Load the JSON data from the file
@@ -388,12 +390,12 @@ def _inittable():
     print("communes a été ajouté")
     return
 
-def _executeTransform(region):
+def executeTransform(region):
     #Appeler les requetes sql
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
-    conn = _connDb(dbname)
-    conn.create_function("NULLTOZERO", 1, _nullToZero)
-    conn.create_function("MOY3", 3, _moy3)
+    conn = connDb(dbname)
+    conn.create_function("NULLTOZERO", 1, nullToZero)
+    conn.create_function("MOY3", 3, moy3)
     cursor = conn.cursor()
     with open('settings/settings_demo.json') as f:
         # Load the JSON data from the file
@@ -946,7 +948,19 @@ def _executeTransform(region):
         res=cursor.fetchall()
         columns = [col[0] for col in cursor.description]
         df_controle=pd.DataFrame(res,columns=columns)
-    return df_ciblage, df_controle
+    
+    date_string = datetime.today().strftime('%d%m%Y') 
+    path = 'data/output/{}_{}.xlsx'.format(outputName(region),date_string)
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    writer = pd.ExcelWriter(path, engine='xlsxwriter')
+    df_ciblage.to_excel(writer, sheet_name='ciblage', index=False,header=True)
+    print(df_ciblage.columns.tolist())
+    df_controle.to_excel(writer, sheet_name='controle', index=False,header=True)
+    print(df_controle.columns.tolist())
+    # Close the Pandas Excel writer and output the Excel file.
+    writer.close()
+    print('export créé : {}_{}.xlsx'.format(outputName(region),date_string))
+    return 
 
 
 
@@ -955,13 +969,13 @@ def _executeTransform(region):
         
     
 # Definiton des functions utiles en SQL
-def _nullToZero(value):
+def nullToZero(value):
     if value is None:
         return 0
     else:
         return value
     
-def _moy3(value1, value2, value3):
+def moy3(value1, value2, value3):
     value_list = [value1,value2,value3]
     res = []
     for val in value_list:
@@ -973,16 +987,16 @@ def _moy3(value1, value2, value3):
         clean_res = [float(i) for i in res]
         return sum(clean_res)/len(clean_res) #statistics.mean(res)
 
-def _functionCreator():
+def functionCreator():
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
-    conn = _connDb(dbname)
+    conn = connDb(dbname)
     return
 
 # Requete signalement et réclamation
 # Jointure des tables de t-finess + signalement
-def _testNomRegion(region):
+def testNomRegion(region):
     dbname = utils.read_settings('settings/settings_demo.json',"db","name")
-    conn = _connDb(dbname)
+    conn = connDb(dbname)
     test  ="""SELECT 'oui'
 	FROM region_{n} r 
 	WHERE r.ncc = '{}'
