@@ -20,16 +20,48 @@
     ],
     "parametres" : [
         {
-        "param_N":"2023",
-        "param_N_1":"2022", 
-        "param_N_2": "2021", 
-        "param_N_3":"2020",  
-        "param_N_4":"2019", 
-        "param_fin_mois":"2023-09-30",  
-        "param_debut_mois":"2023-10-01", 
-        "param_debut_mois_N_3":"2020-10-01"
+        "param_N":"2024",
+        "param_N_1":"2023", 
+        "param_N_2": "2022", 
+        "param_N_3":"2021",  
+        "param_N_4":"2020", 
+        "param_fin_mois":"20231231",  
+        "param_debut_mois":"20231231", 
+        "param_debut_mois_N_3":"20210101"
         }
-   ]
+   ],
+   "main":[
+    {
+        "to_csv" : "data/to_csv",
+        "input": "data/input"
+   }
+    ],
+   "to_excel":[
+    {
+        "path" : "data/output/"
+   }
+    ],
+    "utils":[
+        {
+            "folderPath" : "data/input/sivss",
+            "all_sivss": "data/to_csv/all_sivss.csv"
+       }
+        ],
+   "import":[
+    {
+    "dir":"/mnt/test_my_scripts/controle_ehpad_v4/controle_ehpad/data/input/sivss/",
+    "localpath_input":"/../../mnt/test_my_scripts/controle_ehpad_v4/controle_ehpad/data/input/",
+    "remotepath_input":"/SCN_BDD/",
+    "localpath_sivss":"/../../mnt/test_my_scripts/controle_ehpad_v4/controle_ehpad/data/input/sivss/",
+    "remotepath_sivss":"/SCN_BDD/SIVSS/"
+   }
+    ],
+   "export":[
+    {
+    "localpath" : "data/output/",
+    "remotepath" : "/SCN_BDD/SIREC/"
 
+   }
+    ]
 }
 

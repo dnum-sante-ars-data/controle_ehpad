@@ -11,6 +11,7 @@ import re
 import json
 import logging
 from os import listdir
+import json
 
 #Regle à respecter fichier excel seulement
 #La feuille d'interet doit etre placée en premier
@@ -126,3 +127,25 @@ def concatSignalement():
     print('all_sivss.csv créé')
     return
  
+
+
+def sftpInfo():
+    with open('settings/settings_demo.json') as f:
+        # Load the JSON data from the file
+        data = json.load(f)
+    # Find the index of the code equal to 2 in the "code" list
+    url = data["sftp"][0]["url"]
+    username = data["sftp"][0]["username"]
+    passphrase =  data["sftp"][0]["passphrase"]
+    print('{}, {}'.format(url,username))
+    return url, username, passphrase
+
+def outputName(region):
+    with open('settings/settings_demo.json') as f:
+        # Load the JSON data from the file
+        data = json.load(f)
+    # Find the index of the code equal to 2 in the "code" list
+    index = data["region"][0]["code"].index(region)
+    # Get the corresponding "nom" value from the "nom" list
+    nom = data["region"][0]["nom"][index]
+    return nom

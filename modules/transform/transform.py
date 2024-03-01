@@ -6,7 +6,6 @@ import pandas as pd
 from modules.init_db.init_db import connDb
 from utils import utils
 import json
-from modules.Info.info import outputName
 from datetime import datetime
 
 def inittable():
@@ -351,7 +350,7 @@ def inittable():
     FROM (SELECT finess, identifiant_de_la_mission, 
     	date_provisoire_visite, date_reelle_visite, 
         CTRL_PL_PI, IIF(date_reelle_visite <="""+param_fin_mois+""", 'oui', '') as realise, 
-        IIF(date_reelle_visite IS NULL AND date_provisoire_visite >="""+param_debut_mois+""", 'oui', '') as programme 
+        IIF(date_reelle_visite IS NULL AND date_provisoire_visite >"""+param_debut_mois+""", 'oui', '') as programme 
         FROM (SELECT *,IIF(LENGTH(code_finess)= 8, '0'|| code_finess, code_finess) as finess, 
         		CASE WHEN type_de_mission = 'Contrôle sur pièces' THEN 'Contrôle sur pièces' 
                 WHEN type_de_mission = 'Contrôle sur pièces EHPAD' THEN 'Contrôle sur pièces' 
@@ -951,7 +950,7 @@ def executeTransform(region):
     
     date_string = datetime.today().strftime('%d%m%Y') 
     paths=utils.get_paths("settings/settings_demo.json","to_excel")
-    path = paths['path']+'{}_{}.xlsx'.format(outputName(region),date_string)
+    path = paths['path']+'{}_{}.xlsx'.format(utils.outputName(region),date_string)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     writer = pd.ExcelWriter(path, engine='xlsxwriter')
     df_ciblage.to_excel(writer, sheet_name='ciblage', index=False,header=True)
@@ -960,7 +959,7 @@ def executeTransform(region):
     print(df_controle.columns.tolist())
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
-    print('export créé : {}_{}.xlsx'.format(outputName(region),date_string))
+    print('export créé : {}_{}.xlsx'.format(utils.outputName(region),date_string))
     return 
 
 

@@ -9,7 +9,6 @@ import pandas as pd
 from datetime import datetime
 import json
 import paramiko
-from modules.Info.info import sftpInfo,outputName
 from utils import utils
 
 
@@ -18,7 +17,7 @@ from utils import utils
 # client.get('remote_filename', 'local_filename')
 def localToSFTP(region):
     # Informations de connexion SFTP
-    hostname, username, passphrase = sftpInfo()
+    hostname, username, passphrase = utils.sftpInfo()
     paramiko.util.log_to_file("paramiko.log")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -33,13 +32,13 @@ def localToSFTP(region):
     #client.connect(username=username, password=passphrase)
     date_string = datetime.today().strftime('%d%m%Y')
     paths=utils.get_paths("settings/settings_demo.json","export")
-    localpath = paths["localpath"]+'{}_{}.xlsx'.format(outputName(region),date_string)
-    remotepath = paths["localpath"]+'{}_{}.xlsx'.format(outputName(region),date_string)
+    localpath = paths["localpath"]+'{}_{}.xlsx'.format(utils.outputName(region),date_string)
+    remotepath = paths["localpath"]+'{}_{}.xlsx'.format(utils.outputName(region),date_string)
     sftp = ssh.open_sftp()
     print('sftp open')
     sftp.put(localpath, remotepath)
     #client.put(local_path, remote_path)
-    print('Fichier {}_{}.xlsx déposé en dans /SCN_BDD/SIREC'.format(outputName(region),date_string))
+    print('Fichier {}_{}.xlsx déposé en dans /SCN_BDD/SIREC'.format(utils.outputName(region),date_string))
     # Close the SFTP client connection
     #client.close()
     print('Fermeture de la connexion SFTP')

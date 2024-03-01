@@ -1,4 +1,3 @@
-from modules.Info.info import sftpInfo
 from py7zr import SevenZipFile
 import os 
 import gnupg
@@ -7,7 +6,7 @@ from utils import utils
 
 def getWithSFTP():
     rep=['SIVSS','ANAP','CNAM','CNSA','ERRD','FINESS','INSEE','SIICEA']
-    hostname,username,passphrase=sftpInfo()
+    hostname,username,passphrase=utils.sftpInfo()
     paramiko.util.log_to_file("paramiko.log")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
